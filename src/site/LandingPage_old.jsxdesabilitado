@@ -1,0 +1,624 @@
+import React, { useState, useEffect, useRef } from "react";
+import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
+import { ArrowRight, Zap, Sun, Moon, CheckCircle2, Plus, Layout, Sparkles, Wind, Sprout, Mountain, Brain, BarChart3, Calendar, Layers, Search, Shield, Users, Clock } from "lucide-react";
+
+// ==========================================
+// 1. VISUAL ASSETS & ICONS
+// ==========================================
+
+const PranaLogo = ({ className = "w-10 h-10" }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" className={`logo-mark ${className}`}>
+    <path d="M 20 45 Q 10 40, 15 30 C 20 10, 80 10, 85 30 Q 90 40, 80 45 C 70 55, 30 55, 20 45 Z" className="logo-glyph-shape-fill" />
+    <path d="M 20 55 Q 10 60, 15 70 C 20 90, 80 90, 85 70 Q 90 60, 80 55 C 70 45, 30 45, 20 55 Z" className="logo-glyph-shape-fill" />
+  </svg>
+);
+
+const IconBase = ({ children, className = "", ativo = false, ...props }) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 100 100"
+    className={`icon-hero ${ativo ? "icon-ativo" : ""} ${className}`}
+    {...props}
+  >
+    {children}
+  </svg>
+);
+
+const IconChat = (props) => (
+  <IconBase {...props}>
+    <path
+      className="icon-loader-wave"
+      d="M 20 60 Q 10 50, 20 40 T 40 40 T 60 40 T 80 40 Q 90 50, 80 60 T 60 60 T 40 60 T 20 60 Z"
+    />
+  </IconBase>
+);
+
+const IconSankalpa = (props) => (
+  <IconBase {...props}>
+    <path
+      className="icon-nature-energia"
+      d="M 50 10 Q 90 25, 90 50 Q 90 75, 50 90 Q 10 75, 10 50 Q 10 25, 50 10 Z"
+      style={{ strokeDasharray: "4 4" }}
+    />
+    <path className="icon-nature-base" d="M 50 20 L 70 40 L 50 80 L 30 40 Z" />
+    <path
+      className="icon-hero-detalhe"
+      d="M 50 20 L 50 80 M 30 40 L 70 40"
+      style={{ fill: "none", stroke: props.ativo ? "var(--accent-dark-earthy)" : "none" }}
+    />
+  </IconBase>
+);
+
+const IconNeural = (props) => (
+  <IconBase {...props}>
+    <circle
+      className="icon-nature-energia"
+      cx="50"
+      cy="35"
+      r="25"
+      style={{ strokeDasharray: "4 4", animationDelay: "-0.8s" }}
+    />
+    <path className="icon-nature-base" d="M 50 85 V 40" />
+    <path className="icon-nature-base" d="M 50 60 L 30 40" />
+    <path className="icon-nature-base" d="M 50 60 L 70 40" />
+  </IconBase>
+);
+
+const IconCronos = (props) => (
+  <IconBase {...props}>
+    <path
+      className="icon-nature-energia"
+      d="M 30 10 Q 60 50, 30 90 Q 40 50, 30 10 Z"
+      style={{ strokeDasharray: "4 4", opacity: "0.5" }}
+    />
+    <path className="icon-nature-base" d="M 40 10 Q 70 50, 40 90 Q 50 50, 40 10 Z" />
+  </IconBase>
+);
+
+// ==========================================
+// 2. LIVE DEMO COMPONENTS
+// ==========================================
+
+// --- DEMO 1: CHAT CONTEXTUAL (Ash) ---
+const LiveDemoChat = () => {
+  const [step, setStep] = useState(0); 
+  const [text, setText] = useState("");
+  const targetText = "Criar projeto 'Jardim Zen' com 3 tarefas de foco.";
+
+  useEffect(() => {
+    let active = true;
+    const run = async () => {
+      while (active) {
+        setStep(0); setText("");
+        await new Promise(r => setTimeout(r, 1500));
+        setStep(1);
+        for (let i = 0; i <= targetText.length; i++) {
+          if (!active) return;
+          setText(targetText.slice(0, i));
+          await new Promise(r => setTimeout(r, 50));
+        }
+        await new Promise(r => setTimeout(r, 500));
+        setStep(2);
+        await new Promise(r => setTimeout(r, 1500));
+        setStep(3);
+        await new Promise(r => setTimeout(r, 4000));
+      }
+    };
+    run();
+    return () => { active = false; };
+  }, []);
+
+  return (
+    <div className="w-full h-80 flex md:flex-row flex-col overflow-hidden bg-[var(--card-bg-solid)] rounded-lg border border-[var(--glass-border)] relative shadow-2xl">
+      <div className="w-full md:w-1/3 border-r border-white/10 p-4 flex flex-col bg-black/5">
+        <div className="flex items-center gap-2 mb-4 opacity-50 border-b border-white/5 pb-2">
+          <IconChat className="w-4 h-4" />
+          <span className="text-[10px] mono-font uppercase tracking-widest">Ash Intelligence</span>
+        </div>
+        <div className="flex-1 space-y-4">
+          {step >= 1 && (
+            <motion.div initial={{opacity:0, x:-10}} animate={{opacity:1, x:0}} className="self-end bg-[var(--accent)]/10 p-3 rounded-xl border border-[var(--accent)]/20 text-sm">
+              <p className="text-[var(--text-primary)] opacity-90">{text}</p>
+            </motion.div>
+          )}
+          {step >= 2 && (
+            <motion.div initial={{opacity:0}} animate={{opacity:1}} className="flex items-center gap-3">
+              <div className={`w-8 h-8 rounded-full border border-[var(--accent)]/30 flex items-center justify-center ${step === 2 ? "animate-pulse" : ""}`}>
+                <IconChat className="w-5 h-5" ativo={step === 2} />
+              </div>
+              <span className="text-xs mono-font text-[var(--accent)]">{step === 2 ? "Criando bioma..." : "Concluído"}</span>
+            </motion.div>
+          )}
+        </div>
+      </div>
+      <div className="w-full md:w-2/3 p-4 relative flex items-center justify-center bg-[var(--card-bg-solid)]">
+        <div className="absolute inset-0 opacity-10" style={{backgroundImage: "var(--texture-image)"}}></div>
+        <AnimatePresence mode="wait">
+          {step < 3 ? (
+             <motion.div key="empty" initial={{opacity:0}} animate={{opacity:0.3}} exit={{opacity:0}} className="flex flex-col items-center">
+               <IconSankalpa className="w-12 h-12 opacity-50 mb-2" />
+               <p className="mono-font text-xs tracking-widest opacity-50">AGUARDANDO...</p>
+             </motion.div>
+          ) : (
+             <motion.div key="result" initial={{opacity:0, y:20}} animate={{opacity:1, y:0}} className="w-full max-w-sm glass-panel p-4 rounded-xl border border-[var(--glass-border)] relative">
+                <div className="absolute top-0 left-0 w-full h-1 bg-[var(--accent)] animate-[pulse_2s_ease]"></div>
+                <div className="flex justify-between items-start mb-4">
+                  <div>
+                    <span className="text-[9px] bg-[var(--accent)] text-black px-1.5 py-0.5 rounded uppercase font-bold">Novo Projeto</span>
+                    <h3 className="text-xl serif-font text-[var(--text-primary)] mt-1">Jardim Zen</h3>
+                  </div>
+                  <IconSankalpa className="w-6 h-6" ativo={true} />
+                </div>
+                <div className="space-y-2">
+                   {["Pesquisar pedras", "Comprar fonte", "Meditar"].map((t,i) => (
+                      <div key={i} className="flex items-center gap-2 p-2 bg-black/5 rounded border border-white/5">
+                        <div className="w-3 h-3 rounded-full border border-[var(--accent)]"></div>
+                        <span className="text-xs text-[var(--text-secondary)]">{t}</span>
+                      </div>
+                   ))}
+                </div>
+             </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    </div>
+  );
+};
+
+// --- DEMO 2: BIOMAS (Visão Hierárquica) ---
+const LiveDemoBiomas = () => {
+  return (
+    <div className="w-full h-80 bg-[var(--card-bg-solid)] rounded-lg border border-[var(--glass-border)] relative overflow-hidden flex flex-col">
+       <div className="h-8 border-b border-white/5 flex items-center px-4 gap-2 bg-black/5">
+         <div className="w-3 h-3 rounded-full bg-red-500/20"></div>
+         <div className="w-3 h-3 rounded-full bg-yellow-500/20"></div>
+         <div className="w-3 h-3 rounded-full bg-green-500/20"></div>
+         <span className="text-[10px] mono-font opacity-40 ml-4">Bioma View // Hierarchy</span>
+       </div>
+       <div className="flex-1 p-6 relative">
+          <div className="absolute inset-0 opacity-10" style={{backgroundImage: "var(--texture-image)"}}></div>
+          {/* Tree Structure Viz */}
+          <div className="flex flex-col gap-4 relative z-10 w-full max-w-lg mx-auto">
+             <motion.div initial={{opacity:0, x:-20}} whileInView={{opacity:1, x:0}} transition={{delay:0.1}} className="flex items-center gap-4">
+                <div className="w-10 h-10 rounded-lg bg-[var(--accent)]/20 border border-[var(--accent)]/40 flex items-center justify-center">
+                   <Mountain className="w-5 h-5 text-[var(--accent)]" />
+                </div>
+                <div>
+                   <h4 className="text-sm font-bold text-[var(--text-primary)]">Vida Pessoal</h4>
+                   <p className="text-[10px] text-[var(--text-secondary)] mono-font">ROOT AREA</p>
+                </div>
+             </motion.div>
+             <div className="ml-5 pl-8 border-l border-dashed border-[var(--text-secondary)]/30 space-y-4 py-2">
+                <motion.div initial={{opacity:0, x:-20}} whileInView={{opacity:1, x:0}} transition={{delay:0.3}} className="flex items-center gap-3">
+                   <div className="w-8 h-8 rounded bg-emerald-900/20 border border-emerald-500/30 flex items-center justify-center">
+                      <Sprout className="w-4 h-4 text-emerald-500" />
+                   </div>
+                   <span className="text-sm text-[var(--text-primary)]">Saúde & Vitalidade</span>
+                </motion.div>
+                <div className="ml-4 pl-6 border-l border-dashed border-[var(--text-secondary)]/20 space-y-2">
+                    <motion.div initial={{opacity:0}} whileInView={{opacity:1}} transition={{delay:0.5}} className="p-2 bg-black/5 rounded text-xs text-[var(--text-secondary)] border border-white/5 flex justify-between">
+                       <span>Rotina Matinal</span>
+                       <span className="px-1 bg-[var(--accent)]/10 text-[var(--accent)] rounded text-[9px]">ACTIVE</span>
+                    </motion.div>
+                </div>
+                <motion.div initial={{opacity:0, x:-20}} whileInView={{opacity:1, x:0}} transition={{delay:0.4}} className="flex items-center gap-3">
+                   <div className="w-8 h-8 rounded bg-blue-900/20 border border-blue-500/30 flex items-center justify-center">
+                      <Users className="w-4 h-4 text-blue-500" />
+                   </div>
+                   <span className="text-sm text-[var(--text-primary)]">Relacionamentos</span>
+                </motion.div>
+             </div>
+          </div>
+       </div>
+    </div>
+  );
+};
+
+// --- DEMO 3: MONITOR DE ENERGIA (Holistic) ---
+const LiveDemoEnergy = () => {
+    return (
+      <div className="w-full h-80 bg-[var(--card-bg-solid)] rounded-lg border border-[var(--glass-border)] relative overflow-hidden flex flex-col items-center justify-center p-6">
+         <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-[var(--accent)]/5 to-transparent"></div>
+         <div className="relative z-10 text-center space-y-4">
+             <div className="relative inline-block">
+                <svg className="w-32 h-32 transform -rotate-90">
+                   <circle cx="64" cy="64" r="60" fill="none" stroke="currentColor" strokeWidth="4" className="text-[var(--text-secondary)]/20" />
+                   <motion.circle 
+                     cx="64" cy="64" r="60" fill="none" stroke="var(--accent)" strokeWidth="4" 
+                     strokeDasharray="377" 
+                     strokeDashoffset="377"
+                     animate={{ strokeDashoffset: 100 }}
+                     transition={{ duration: 2, ease: "easeOut" }}
+                   />
+                </svg>
+                <div className="absolute inset-0 flex flex-col items-center justify-center">
+                   <span className="text-3xl font-bold mono-font text-[var(--text-primary)]">72%</span>
+                   <span className="text-[10px] uppercase tracking-widest text-[var(--text-secondary)]">VITALIDADE</span>
+                </div>
+             </div>
+             <div className="flex gap-4 justify-center">
+                 <div className="px-3 py-1 rounded-full bg-black/10 border border-white/5 text-xs text-[var(--text-secondary)] flex items-center gap-2">
+                     <Moon className="w-3 h-3" /> Sono: Ótimo
+                 </div>
+                 <div className="px-3 py-1 rounded-full bg-black/10 border border-white/5 text-xs text-[var(--text-secondary)] flex items-center gap-2">
+                     <Sun className="w-3 h-3" /> Foco: Alto
+                 </div>
+             </div>
+         </div>
+      </div>
+    );
+  };
+
+// --- DEMO 4: KANBAN (Tasks) ---
+const LiveDemoKanban = () => {
+    return (
+      <div className="w-full h-80 bg-[var(--card-bg-solid)] rounded-lg border border-[var(--glass-border)] relative overflow-hidden flex flex-col">
+         <div className="h-8 border-b border-white/5 flex items-center justify-between px-4 bg-black/5">
+             <span className="text-[10px] mono-font opacity-40">WORKFLOW ENGINE</span>
+             <Layout className="w-3 h-3 opacity-40" />
+         </div>
+         <div className="flex-1 p-4 flex gap-3 overflow-hidden">
+             {/* Coluna 1 */}
+             <div className="w-1/3 h-full flex flex-col gap-2 opacity-50">
+                 <div className="text-[10px] uppercase tracking-wider text-[var(--text-secondary)] mb-1">To Do</div>
+                 <div className="h-16 bg-black/5 rounded border border-white/5"></div>
+                 <div className="h-20 bg-black/5 rounded border border-white/5"></div>
+             </div>
+             {/* Coluna 2 (Active) */}
+             <div className="w-1/3 h-full flex flex-col gap-2">
+                 <div className="text-[10px] uppercase tracking-wider text-[var(--accent)] mb-1 flex items-center gap-1">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent)]"></span> In Progress
+                 </div>
+                 <motion.div 
+                    layout
+                    initial={{ y: 20, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    transition={{ duration: 0.5 }}
+                    className="p-3 bg-[var(--card-bg-solid)] rounded border border-[var(--glass-border)] shadow-lg relative"
+                 > 
+                    <div className="absolute left-0 top-3 bottom-3 w-0.5 bg-[var(--accent)] rounded-r"></div>
+                    <div className="text-xs text-[var(--text-primary)] font-medium mb-1">Design System V2</div>
+                    <div className="flex items-center justify-between mt-2">
+                        <div className="flex -space-x-1">
+                           <div className="w-4 h-4 rounded-full bg-gray-700 border border-black"></div>
+                           <div className="w-4 h-4 rounded-full bg-gray-600 border border-black"></div>
+                        </div>
+                        <span className="text-[9px] mono-font text-[var(--accent)]">DUE TODAY</span>
+                    </div>
+                 </motion.div>
+                 <div className="h-16 bg-black/5 rounded border border-white/5 opacity-40"></div>
+             </div>
+             {/* Coluna 3 */}
+             <div className="w-1/3 h-full flex flex-col gap-2 opacity-50">
+                 <div className="text-[10px] uppercase tracking-wider text-[var(--text-secondary)] mb-1">Done</div>
+                 <div className="h-16 bg-black/5 rounded border border-white/5 flex items-center justify-center">
+                    <CheckCircle2 className="w-4 h-4 opacity-20" />
+                 </div>
+             </div>
+         </div>
+      </div>
+    );
+  };
+
+// ==========================================
+// 3. MAIN LANDING PAGE
+// ==========================================
+
+export default function LandingPage() {
+  const { scrollYProgress } = useScroll();
+  const y = useTransform(scrollYProgress, [0, 1], [0, -50]);
+  const [theme, setTheme] = useState("prana-dark-textured");
+
+  const toggleTheme = () => {
+    setTheme(prev => prev === "prana-dark-textured" ? "prana-light-textured" : "prana-dark-textured");
+  };
+
+  return (
+    <div
+      className={`prana-body min-h-screen h-screen overflow-y-auto font-sans selection:bg-[var(--accent)]/30 ${theme}`}
+      data-theme={theme}
+      style={{
+          backgroundColor: 'var(--bg-color)',
+          color: 'var(--text-primary)'
+      }}
+    >
+      <style>{`
+        :root, [data-theme='prana-dark-textured'] {
+          --accent-rgb: 217, 119, 6; --accent: rgb(var(--accent-rgb)); 
+          --accent-dark-earthy: #78350F;
+          --bg-color: #050407; --text-primary: #fafaf5; --text-secondary: #cbd5e1;
+          --card-bg-solid: #11100F; 
+          --texture-image: url('https://www.transparenttextures.com/patterns/cartographer.png');
+          --glass-border: rgba(217, 119, 6, 0.25); --glass-bg: rgba(15, 10, 5, 0.92);
+        }
+        [data-theme='prana-light-textured'] {
+          --bg-color: #FDFBF6; 
+          --text-primary: #181410; 
+          --text-secondary: #665c50; 
+          --accent-rgb: 217, 119, 6; --accent: rgb(var(--accent-rgb));
+          --card-bg-solid: #FFFFFF;
+          --texture-image: url('https://www.transparenttextures.com/patterns/paper.png');
+          --glass-border: rgba(217, 119, 6, 0.18);
+          --glass-bg: rgba(255, 255, 255, 0.9);
+        }
+        .serif-font { font-family: 'Vollkorn', serif; }
+        .mono-font { font-family: 'JetBrains Mono', monospace; }
+        .glass-panel { background: var(--glass-bg); backdrop-filter: blur(12px); }
+      `}</style>
+      
+      {/* NAVBAR */}
+      <nav className="fixed top-0 w-full z-50 border-b border-[var(--glass-border)] bg-[var(--bg-color)]/80 backdrop-blur-md">
+        <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+                <PranaLogo className="w-8 h-8 text-[var(--accent)]" /> 
+                <span className="serif-font text-xl tracking-tight hidden sm:block font-bold">Prana 3.0</span>
+            </div>
+            <div className="flex items-center gap-4">
+                <button onClick={toggleTheme} className="p-2 rounded-full hover:bg-[var(--accent)]/10 text-[var(--text-secondary)] transition-colors">
+                    {theme.includes('light') ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
+                </button>
+                <div className="hidden md:flex gap-6 text-sm font-medium text-[var(--text-secondary)]">
+                    <a href="#features" className="hover:text-[var(--accent)] transition-colors">Funcionalidades</a>
+                    <a href="#manifesto" className="hover:text-[var(--accent)] transition-colors">Manifesto</a>
+                    <a href="#pricing" className="hover:text-[var(--accent)] transition-colors">Planos</a>
+                </div>
+                <button className="px-4 py-2 bg-[var(--accent)] text-white text-sm font-bold rounded-lg hover:shadow-[0_0_20px_rgba(217,119,6,0.4)] transition-all">
+                    Começar Agora
+                </button>
+            </div>
+        </div>
+      </nav>
+
+      {/* HERO SECTION */}
+      <section className="relative pt-32 pb-20 px-6 min-h-[90vh] flex items-center justify-center overflow-hidden">
+          <div className="absolute top-0 inset-x-0 h-full bg-[radial-gradient(circle_at_50%_0%,rgba(217,119,6,0.15)_0%,transparent_60%)] pointer-events-none"></div>
+          
+          <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center relative z-10">
+              <motion.div initial={{opacity:0, y:30}} animate={{opacity:1, y:0}} transition={{duration:0.8}}>
+                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-[var(--accent)]/30 bg-[var(--accent)]/5 text-[var(--accent)] text-xs uppercase tracking-widest font-bold mb-6">
+                      <Sparkles className="w-3 h-3" /> Sistema Operacional Holístico
+                  </div>
+                  <h1 className="text-5xl md:text-7xl serif-font leading-[1] mb-6 text-[var(--text-primary)]">
+                      Ordem para o Caos. <br/> 
+                      <span className="text-transparent bg-clip-text bg-gradient-to-r from-[var(--accent)] to-amber-200">Alma para a Produtividade.</span>
+                  </h1>
+                  <p className="text-lg text-[var(--text-secondary)] mb-8 leading-relaxed max-w-lg">
+                      O primeiro sistema que une <strong>Gestão de Projetos Profissional</strong> com <strong>Inteligência Emocional e Astrologia</strong>. Não apenas faça coisas. Sinta-se inteiro enquanto faz.
+                  </p>
+                  <div className="flex flex-wrap gap-4">
+                      <button className="px-8 py-3 bg-[var(--accent)] text-white font-bold rounded-lg hover:bg-[var(--accent-dark-earthy)] transition-colors flex items-center gap-2">
+                          Experimentar Gratuitamente <ArrowRight className="w-4 h-4" />
+                      </button>
+                      <button className="px-8 py-3 border border-[var(--glass-border)] text-[var(--text-primary)] font-medium rounded-lg hover:bg-[var(--accent)]/5 transition-colors">
+                          Ver o Manifesto
+                      </button>
+                  </div>
+                  <div className="mt-12 flex items-center gap-4 text-xs text-[var(--text-secondary)] opacity-70">
+                      <div className="flex -space-x-2">
+                          {[1,2,3,4].map(i => <div key={i} className="w-8 h-8 rounded-full bg-gray-600 border border-black"></div>)}
+                      </div>
+                      <p>Usado por 10.000+ visionários</p>
+                  </div>
+              </motion.div>
+
+              <motion.div initial={{opacity:0, scale:0.9}} animate={{opacity:1, scale:1}} transition={{duration:1, delay:0.2}} className="relative">
+                 {/* Main Hero Visual - The Chat Demo */}
+                 <div className="absolute -inset-4 bg-[var(--accent)]/20 blur-3xl rounded-full opacity-30 animate-pulse"></div>
+                 <LiveDemoChat />
+                 <div className="mt-6 grid grid-cols-2 gap-4">
+                     <div className="p-4 rounded-xl border border-[var(--glass-border)] bg-[var(--card-bg-solid)]/50 backdrop-blur">
+                         <div className="flex items-center gap-2 mb-2 text-[var(--accent)]">
+                             <Zap className="w-4 h-4" /> <span className="text-xs font-bold uppercase">Rápido</span>
+                         </div>
+                         <p className="text-xs text-[var(--text-secondary)]">Captura de tarefas em 0.5s via chat.</p>
+                     </div>
+                     <div className="p-4 rounded-xl border border-[var(--glass-border)] bg-[var(--card-bg-solid)]/50 backdrop-blur">
+                         <div className="flex items-center gap-2 mb-2 text-[var(--accent)]">
+                             <Brain className="w-4 h-4" /> <span className="text-xs font-bold uppercase">Contextual</span>
+                         </div>
+                         <p className="text-xs text-[var(--text-secondary)]">Entende projetos, áreas e tags automaticamente.</p>
+                     </div>
+                 </div>
+              </motion.div>
+          </div>
+      </section>
+
+      {/* ASH INTELLIGENCE SECTION */}
+      <section className="py-24 px-6 border-t border-[var(--glass-border)] relative">
+          <div className="max-w-7xl mx-auto">
+              <div className="text-center mb-16">
+                  <h2 className="text-4xl serif-font mb-4 text-[var(--text-primary)]">Conheça Ash. Sua Inteligência Auxiliar.</h2>
+                  <p className="text-[var(--text-secondary)] max-w-2xl mx-auto">
+                      Mais que um chatbot. Ash é o guardião do seu sistema. Ele organiza, prioriza e sugere ações baseadas no seu nível de energia e no trânsito astrológico atual.
+                  </p>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                  <div className="col-span-1 md:col-span-2">
+                       <LiveDemoBiomas />
+                  </div>
+                  <div className="space-y-6">
+                      <div className="p-6 rounded-xl border border-[var(--glass-border)] hover:bg-[var(--accent)]/5 transition-colors cursor-pointer group">
+                          <h3 className="text-lg font-bold mb-2 flex items-center gap-2 text-[var(--text-primary)]">
+                              <Layout className="w-5 h-5 text-[var(--accent)]" /> Criação Estruturada
+                          </h3>
+                          <p className="text-sm text-[var(--text-secondary)]">
+                              Peça "Crie um projeto de marketing" e Ash gera estrutura de pastas, tarefas iniciais e prazos sugeridos.
+                          </p>
+                      </div>
+                      <div className="p-6 rounded-xl border border-[var(--glass-border)] hover:bg-[var(--accent)]/5 transition-colors cursor-pointer group">
+                          <h3 className="text-lg font-bold mb-2 flex items-center gap-2 text-[var(--text-primary)]">
+                              <Sparkles className="w-5 h-5 text-[var(--accent)]" /> Modo Foco
+                          </h3>
+                          <p className="text-sm text-[var(--text-secondary)]">
+                              "Estou cansado". Ash filtra apenas tarefas de baixa energia e alta recompensa.
+                          </p>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </section>
+
+      {/* HOLISTIC SYSTEM SECTION */}
+      <section className="py-24 px-6 bg-[var(--card-bg-solid)] relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-1/3 h-full bg-[var(--accent)]/5 blur-3xl pointer-events-none"></div>
+          <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+               <div>
+                   <span className="text-[var(--accent)] mono-font text-xs tracking-widest uppercase mb-2 block">O Diferencial Prana</span>
+                   <h2 className="text-4xl serif-font mb-6 text-[var(--text-primary)]">Gerencie Energia, Não Apenas Tempo.</h2>
+                   <p className="text-[var(--text-secondary)] mb-6 text-lg">
+                       Produtividade linear é um mito. O ser humano é cíclico. O Prana monitora suas fases lunares pessoais, clima astrológico e níveis de energia reportados para sugerir <em>quando</em> fazer, não apenas <em>o que</em> fazer.
+                   </p>
+                   <ul className="space-y-4 mb-8">
+                       {[
+                           "Registro diário de Humor & Energia",
+                           "Correlação com trânsitos astrológicos",
+                           "Sugestão de rituais para momentos de tensão",
+                           "Dashboard de Equilíbrio Vida-Trabalho"
+                       ].map((item, i) => (
+                           <li key={i} className="flex items-center gap-3 text-[var(--text-primary)]">
+                               <CheckCircle2 className="w-5 h-5 text-[var(--accent)]" /> {item}
+                           </li>
+                       ))}
+                   </ul>
+               </div>
+               <div>
+                   <LiveDemoEnergy />
+               </div>
+          </div>
+      </section>
+
+      {/* VIEWS & DASHBOARD SECTION */}
+      <section className="py-24 px-6 border-t border-[var(--glass-border)]">
+          <div className="max-w-7xl mx-auto transform ">
+              <div className="text-center mb-16">
+                   <h2 className="text-3xl serif-font text-[var(--text-primary)]">Tudo em um só lugar.</h2>
+                   <p className="text-[var(--text-secondary)]">Listas, Kanban, Calendário e Planilhas Inteligentes.</p>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                   <LiveDemoKanban />
+                   <div className="grid grid-cols-2 gap-4">
+                       <div className="p-6 rounded-lg bg-[var(--card-bg-solid)] border border-[var(--glass-border)] flex flex-col items-center justify-center text-center hover:scale-105 transition-transform">
+                           <Calendar className="w-8 h-8 text-[var(--text-primary)] mb-3" />
+                           <h4 className="font-bold text-[var(--text-primary)]">Calendário</h4>
+                           <span className="text-xs text-[var(--text-secondary)]">Drag & Drop Integrado</span>
+                       </div>
+                       <div className="p-6 rounded-lg bg-[var(--card-bg-solid)] border border-[var(--glass-border)] flex flex-col items-center justify-center text-center hover:scale-105 transition-transform">
+                           <BarChart3 className="w-8 h-8 text-[var(--text-primary)] mb-3" />
+                           <h4 className="font-bold text-[var(--text-primary)]">Dashboard</h4>
+                           <span className="text-xs text-[var(--text-secondary)]">Métricas em Tempo Real</span>
+                       </div>
+                       <div className="p-6 rounded-lg bg-[var(--card-bg-solid)] border border-[var(--glass-border)] flex flex-col items-center justify-center text-center hover:scale-105 transition-transform">
+                           <Layout className="w-8 h-8 text-[var(--text-primary)] mb-3" />
+                           <h4 className="font-bold text-[var(--text-primary)]">Board</h4>
+                           <span className="text-xs text-[var(--text-secondary)]">Kanban Flexível</span>
+                       </div>
+                       <div className="p-6 rounded-lg bg-[var(--card-bg-solid)] border border-[var(--glass-border)] flex flex-col items-center justify-center text-center hover:scale-105 transition-transform">
+                           <Users className="w-8 h-8 text-[var(--text-primary)] mb-3" />
+                           <h4 className="font-bold text-[var(--text-primary)]">Equipes</h4>
+                           <span className="text-xs text-[var(--text-secondary)]">Colaboração Real</span>
+                       </div>
+                   </div>
+              </div>
+          </div>
+      </section>
+
+      {/* COMPARISON TABLE */}
+      <section className="py-20 px-6 bg-[var(--card-bg-solid)]/30">
+          <div className="max-w-4xl mx-auto">
+              <h2 className="text-3xl serif-font text-center mb-12 text-[var(--text-primary)]">Por que mudar para o Prana?</h2>
+              <div className="overflow-x-auto">
+                  <table className="w-full text-left border-collapse">
+                      <thead>
+                          <tr className="border-b border-[var(--glass-border)]">
+                              <th className="p-4 text-sm font-bold text-[var(--text-secondary)] uppercase">Funcionalidade</th>
+                              <th className="p-4 text-sm font-bold text-[var(--accent)] uppercase bg-[var(--accent)]/5 rounded-t-lg">Prana 3.0</th>
+                              <th className="p-4 text-sm font-bold text-[var(--text-secondary)] uppercase opacity-50">Notion</th>
+                              <th className="p-4 text-sm font-bold text-[var(--text-secondary)] uppercase opacity-50">Asana</th>
+                          </tr>
+                      </thead>
+                      <tbody>
+                          {[
+                              ["IA Contextual Nativa", true, false, false],
+                              ["Monitoramento de Energia (Holístico)", true, false, false],
+                              ["Astrologia Integrada", true, false, false],
+                              ["Gestão de Projetos Robusta", true, true, true],
+                              ["Temas Texturizados (Wabi-Sabi)", true, false, false]
+                          ].map(([feature, prana, notion, asana], i) => (
+                              <tr key={i} className="border-b border-white/5 hover:bg-white/5 transition-colors">
+                                  <td className="p-4 text-sm font-medium text-[var(--text-primary)]">{feature}</td>
+                                  <td className="p-4 text-center bg-[var(--accent)]/5">
+                                      {prana ? <CheckCircle2 className="w-5 h-5 text-[var(--accent)] mx-auto" /> : "-"}
+                                  </td>
+                                  <td className="p-4 text-center opacity-40">
+                                      {notion ? <CheckCircle2 className="w-5 h-5 mx-auto" /> : <span className="text-xs">Plugin</span>}
+                                  </td>
+                                  <td className="p-4 text-center opacity-40">
+                                      {asana ? <CheckCircle2 className="w-5 h-5 mx-auto" /> : "-"}
+                                  </td>
+                              </tr>
+                          ))}
+                      </tbody>
+                  </table>
+              </div>
+          </div>
+      </section>
+
+      {/* PRICING */}
+      <section id="pricing" className="py-24 px-6 border-t border-[var(--glass-border)]">
+          <div className="max-w-7xl mx-auto text-center">
+              <h2 className="text-4xl serif-font mb-12 text-[var(--text-primary)]">Investimento na sua Clareza.</h2>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+                  {/* Free */}
+                  <div className="p-8 rounded-2xl border border-[var(--glass-border)] opacity-60 hover:opacity-100 transition-opacity">
+                      <h3 className="text-xl font-bold mb-2">Iniciado</h3>
+                      <div className="text-3xl serif-font mb-6">R$ 0</div>
+                      <ul className="text-left space-y-3 mb-8 text-sm">
+                          <li>• 3 Projetos Ativos</li>
+                          <li>• IA Ash Básica (10 cmds/dia)</li>
+                          <li>• Mood Tracking Simples</li>
+                      </ul>
+                      <button className="w-full py-2 border border-current rounded hover:bg-white/10">Cadastrar</button>
+                  </div>
+                  {/* Pro */}
+                  <div className="p-8 rounded-2xl border-2 border-[var(--accent)] bg-[var(--accent)]/5 relative transform md:-translate-y-4 shadow-2xl">
+                      <div className="absolute top-0 center bg-[var(--accent)] text-black text-[10px] uppercase font-bold px-3 py-1 rounded-b-lg left-1/2 -translate-x-1/2">
+                          Mais Popular
+                      </div>
+                      <h3 className="text-xl font-bold mb-2 text-[var(--accent)]">Adepto</h3>
+                      <div className="text-4xl serif-font mb-6 font-bold">R$ 49<span className="text-sm font-normal text-gray-500">/mês</span></div>
+                      <ul className="text-left space-y-3 mb-8 text-sm">
+                          <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-[var(--accent)]"/> Projetos Ilimitados</li>
+                          <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-[var(--accent)]"/> IA Ash Ilimitada</li>
+                          <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-[var(--accent)]"/> Astrologia Completa</li>
+                          <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-[var(--accent)]"/> Dashboards Personalizados</li>
+                      </ul>
+                      <button className="w-full py-3 bg-[var(--accent)] text-white font-bold rounded hover:bg-[var(--accent-dark-earthy)] transition-colors">
+                          Assinar Agora
+                      </button>
+                  </div>
+                  {/* Team */}
+                  <div className="p-8 rounded-2xl border border-[var(--glass-border)] opacity-60 hover:opacity-100 transition-opacity">
+                      <h3 className="text-xl font-bold mb-2">Tribo</h3>
+                      <div className="text-3xl serif-font mb-6">R$ 99<span className="text-sm font-normal text-gray-500">/usuário</span></div>
+                      <ul className="text-left space-y-3 mb-8 text-sm">
+                          <li>• Tudo do Adepto</li>
+                          <li>• Workspaces Compartilhados</li>
+                          <li>• Permissões Avançadas</li>
+                      </ul>
+                      <button className="w-full py-2 border border-current rounded hover:bg-white/10">Falar com Vendas</button>
+                  </div>
+              </div>
+          </div>
+      </section>
+
+      {/* FOOTER */}
+      <footer className="py-12 px-6 border-t border-[var(--glass-border)] bg-[#050407] text-white/40 text-sm text-center">
+          <div className="flex justify-center items-center gap-2 mb-4 opacity-50">
+             <PranaLogo className="w-6 h-6 grayscale" />
+             <span className="serif-font">Prana 3.0</span>
+          </div>
+          <p>© 2024 Prana OS. Todos os direitos reservados. Feito com intenção.</p>
+      </footer>
+    </div>
+  );
+}

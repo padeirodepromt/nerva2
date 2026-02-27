@@ -1,0 +1,260 @@
+// src/components/chat/ChatChainView.jsx
+// Implementa a Fase 4.4: Vista de Dependência (ChainView) no Chat (Baseado em ReactFlow)
+
+import React, { useState, useCallback, useMemo, useEffect } from 'react';
+import PropTypes from 'prop-types';
+import ReactFlow, { Controls, Background, useNodesState, useEdgesState, Panel } from 'reactflow';
+import 'reactflow/dist/style.css';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Workflow, Minimize2, ExternalLink } from '@/components/icons/PranaLandscapeIcons';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { toast } from 'sonner';
+import { useNavigate } from 'react-router-dom';
+
+// Componentes Internos
+import MindMapCustomNode from '@/components/mindmap/MindMapCustomNode';
+import PranaFormModal from '@/components/forms/PranaFormModal';
+
+// API
+import { fetchChainView } from '@/api/projectViews'; // Nova função sugerida
+import { Task } from '@/api/entities';
+
+const nodeTypes = { customNode: MindMapCustomNode };
+
+// Layout simples para a ChainView (Mantido do seu original)
+const getLayoutedElements = (nodes, edges) => {
+    if (!nodes.length) return { nodes, edges };
+
+    const totalNodes = nodes.length;
+    const columns = Math.max(1, Math.ceil(Math.sqrt(totalNodes)));
+    // const rows = Math.ceil(totalNodes / columns); // Não usado, removido
+    const horizontalSpacing = 260;
+    const verticalSpacing = 220;
+    const startX = -((columns - 1) * horizontalSpacing) / 2;
+    const startY = -((Math.ceil(totalNodes / columns) - 1) * verticalSpacing) / 2;
+
+    const layoutedNodes = nodes.map((node, index) => {
+        const columnIndex = index % columns;
+        const rowIndex = Math.floor(index / columns);
+        return {
+            ...node,
+            position: {
+                x: startX + columnIndex * horizontalSpacing,
+                y: startY + rowIndex * verticalSpacing,
+            },
+        };
+    });
+    return { nodes: layoutedNodes, edges };
+};
+
+// Funções de parsing (Mantidas e Adaptadas)
+const parseChainNodeData = (task) => {
+    const stagePalette = {
+        pending: { border: '#FACC15', bg: 'rgba(250, 204, 21, 0.15)' },
+        in_progress: { border: '#38BDF8', bg: 'rgba(56, 189, 248, 0.15)' },
+        completed: { border: '#34D399', bg: 'rgba(52, 211, 153, 0.18)' },
+        blocked: { border: '#FB7185', bg: 'rgba(251, 113, 133, 0.18)' },
+    };
+
+    // Mapeamento de status do backend para cores
+    const statusMap = {
+        'a_fazer': 'pending',
+        'em_progresso': 'in_progress',
+        'concluido': 'completed',
+        'bloqueado': 'blocked'
+    };
+
+    const stage = statusMap[task.status] || 'pending';
+    const color = stagePalette[stage];
+
+    return {
+        id: task.id,
+        type: 'customNode',
+        data: {
+            label: task.name || task.title, // Fallback para name
+            node_type: 'task',
+            reference_id: task.id,
+            color,
+            status: stage,
+            // Dados extras de cadeia se existirem
+            blocked: Boolean(task?.chainMeta?.isBlocked),
+            incoming: task?.chainMeta?.incomingCount || 0,
+            outgoing: task?.chainMeta?.outgoingCount || 0,
+        },
+        position: { x: 0, y: 0 } // Será sobrescrito pelo layout
+    };
+};
+
+const parseChainEdgeData = (dependency) => {
+    return {
+        id: `e-${dependency.sourceTaskId}-${dependency.targetTaskId}`,
+        source: dependency.sourceTaskId,
+        target: dependency.targetTaskId,
+        type: 'default',
+        animated: true,
+        label: 'Depende de',
+        markerEnd: { type: 'arrowclosed', color: '#EF4444' },
+        style: { stroke: '#EF4444', strokeWidth: 2 }
+    };
+};
+
+export default function ChatChainView({ projectId, height = "100%" }) {
+    const navigate = useNavigate();
+    const [loading, setLoading] = useState(true);
+    
+    // Dados
+    const [chainData, setChainData] = useState({ tasks: [], dependencies: [] });
+    const [metrics, setMetrics] = useState({});
+    const [projectInfo, setProjectInfo] = useState(null);
+
+    // Estado do Modal (Zoom In)
+    const [modalOpen, setModalOpen] = useState(false);
+    const [modalItemId, setModalItemId] = useState(null);
+
+    // --- CARREGAMENTO AUTÔNOMO ---
+    const loadChainData = useCallback(async () => {
+        if (!projectId) return;
+        setLoading(true);
+        try {
+            // Tenta buscar a view completa da API
+            // Se a API fetchChainView ainda não existir, usamos um fallback local
+            let data;
+            try {
+                data = await fetchChainView(projectId);
+            } catch (e) {
+                console.warn("Endpoint de chain view falhou, usando fallback.", e);
+                // Fallback: Busca tarefas simples
+                const tasks = await Task.filter({ project_id: projectId });
+                data = { 
+                    chainData: { tasks, dependencies: [] }, // Dependências vazias no fallback
+                    project: { id: projectId, name: 'Projeto' } 
+                };
+            }
+
+            setChainData(data.chainData || { tasks: [], dependencies: [] });
+            setProjectInfo(data.project);
+            
+            // Recalcula métricas simples se não vierem do backend
+            if (!data.metrics) {
+                const total = data.chainData?.tasks?.length || 0;
+                const completed = data.chainData?.tasks?.filter(t => t.status === 'concluido').length || 0;
+                setMetrics({
+                    total,
+                    completed,
+                    progress: total > 0 ? Math.round((completed / total) * 100) : 0
+                });
+            } else {
+                setMetrics(data.metrics);
+            }
+
+        } catch (error) {
+            console.error("Erro ao carregar ChainView:", error);
+            toast.error("Falha ao carregar fluxo de dependências.");
+        } finally {
+            setLoading(false);
+        }
+    }, [projectId]);
+
+    useEffect(() => {
+        loadChainData();
+    }, [loadChainData]);
+
+    // --- PREPARAÇÃO DO GRAFO (MEMOIZADA) ---
+    const { nodes: initialNodes, edges: initialEdges } = useMemo(() => {
+        const nodes = (chainData.tasks || []).map(parseChainNodeData);
+        const edges = (chainData.dependencies || []).map(parseChainEdgeData);
+        return getLayoutedElements(nodes, edges);
+    }, [chainData]);
+
+    const [nodes, setNodes, onNodesChange] = useNodesState([]);
+    const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+
+    // Atualiza o estado do ReactFlow quando os dados mudam
+    useEffect(() => {
+        setNodes(initialNodes);
+        setEdges(initialEdges);
+    }, [initialNodes, initialEdges, setNodes, setEdges]);
+
+    // --- HANDLERS ---
+    const onNodeClick = useCallback((event, node) => {
+        if (node.data?.reference_id) {
+            setModalItemId(node.data.reference_id);
+            setModalOpen(true);
+        }
+    }, []);
+
+    const handleGoToHub = () => {
+        if (projectId) navigate(`/project/${projectId}?view=chain`);
+    };
+
+    // --- RENDERIZAÇÃO ---
+    return (
+        <div style={{ height }} className="bg-black/20 rounded-xl border border-white/10 overflow-hidden flex flex-col relative">
+            
+            {/* Header */}
+            <div className="flex items-center justify-between p-4 border-b border-white/5 bg-white/5 z-10">
+                <div className="flex flex-col">
+                    <h3 className="text-lg font-semibold flex items-center gap-2 text-white">
+                        <Workflow className="w-5 h-5 text-blue-400" />
+                        Fluxo: {projectInfo?.name || 'Carregando...'}
+                    </h3>
+                    <div className="flex items-center gap-2 text-xs text-muted-foreground mt-1">
+                        <Badge variant="outline" className="border-blue-500/30 text-blue-300">
+                            {metrics.progress || 0}% Concluído
+                        </Badge>
+                        <span>{metrics.total || 0} tarefas</span>
+                    </div>
+                </div>
+                
+                <div className="flex gap-2">
+                    <Button variant="ghost" size="icon" onClick={handleGoToHub} title="Expandir">
+                        <ExternalLink className="w-4 h-4 text-muted-foreground" />
+                    </Button>
+                </div>
+            </div>
+
+            {/* Canvas ReactFlow */}
+            <div className="flex-1 relative bg-black/10">
+                {loading && (
+                    <div className="absolute inset-0 flex items-center justify-center bg-black/40 backdrop-blur-sm z-50">
+                        <div className="animate-pulse text-blue-400">Carregando fluxo...</div>
+                    </div>
+                )}
+
+                <ReactFlow
+                    nodes={nodes}
+                    edges={edges}
+                    onNodesChange={onNodesChange}
+                    onEdgesChange={onEdgesChange}
+                    onNodeClick={onNodeClick}
+                    nodeTypes={nodeTypes}
+                    fitView
+                    attributionPosition="bottom-left"
+                >
+                    <Background variant="dots" gap={24} size={1} className="opacity-20" />
+                    <Controls className="bg-white/5 border-white/10 fill-white text-white" showInteractive={false} />
+                    {/* Painel informativo flutuante se necessário */}
+                    {nodes.length === 0 && !loading && (
+                        <div className="absolute inset-0 flex items-center justify-center text-muted-foreground pointer-events-none">
+                            Nenhuma dependência mapeada neste projeto.
+                        </div>
+                    )}
+                </ReactFlow>
+            </div>
+
+            <PranaFormModal
+                isOpen={modalOpen}
+                onClose={() => setModalOpen(false)}
+                itemType="task"
+                editingItemId={modalItemId}
+                onSave={() => { loadChainData(); setModalOpen(false); }}
+            />
+        </div>
+    );
+}
+
+ChatChainView.propTypes = {
+    projectId: PropTypes.string,
+    height: PropTypes.string
+};

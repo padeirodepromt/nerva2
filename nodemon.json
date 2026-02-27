@@ -1,0 +1,16 @@
+{
+  "watch": ["server.js", "src/"],
+  "ext": "js,jsx,json,ts,tsx",
+  "ignore": [
+    "node_modules/",
+    "dist/",
+    ".vite/",
+    "uploads/",
+    "local.db*",
+    "src/**/*.test.js",
+    "*.log",
+    "vite.config.js.*"
+  ],
+  "exec": "node server.js",
+  "delay": "500ms"
+}

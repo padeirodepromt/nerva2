@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"]
+    },
+    "jsx": "react-jsx",
+    
+    // [FIX] Ignora erros de checagem em bibliotecas (node_modules)
+    "skipLibCheck": true,
+    
+    // [FIX] Garante que ele trate módulos ES6 corretamente
+    "module": "esnext",
+    "target": "esnext",
+    "moduleResolution": "node"
+  },
+  "include": ["src/**/*.js", "src/**/*.jsx", "src/components/chat/ChatSheetView.jsx.desligado"],
+  "exclude": ["node_modules", "dist", "build"]
+}

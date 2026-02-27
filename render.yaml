@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: prana-app
+    env: node
+    buildCommand: npm install --legacy-peer-deps && npm run build
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: JWT_SECRET
+        generateValue: true
+      - key: DATABASE_URL
+        fromDatabase:
+          name: prana-db
+          property: connectionString
+    plan: free
+
+databases:
+  - name: prana-db
+    plan: free
+    databaseName: prana
+    user: prana

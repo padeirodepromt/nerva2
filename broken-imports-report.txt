@@ -1,0 +1,98 @@
+🔍 Scanning for broken imports...
+
+Processed 654 files
+
+❌ Found 21 broken imports:
+
+
+📄 /OLLY_GUIA_VISUAL_CODIGO.js
+   ❌ import ... from './App'
+      Expected: /App
+
+
+📄 /OLLY_QUICK_START.js
+   ❌ import ... from './App'
+      Expected: /App
+
+
+📄 /src/agents/agentCollaboration.js
+   ❌ import ... from '@/api/services/taskService'
+      Expected: /src/api/services/taskService
+
+
+📄 /src/api/agents/general/tools/integrationTools.js
+   ❌ import ... from '../../../../services/emailService.js'
+      Expected: /src/services/emailService.js
+
+
+📄 /src/api/controllers/agentController.js
+   ❌ import ... from '../services/billing/billingService.js'
+      Expected: /src/api/services/billing/billingService.js
+
+   ❌ import ... from '../services/modelsService.js'
+      Expected: /src/api/services/modelsService.js
+
+   ❌ import ... from '../services/agentLogService.js'
+      Expected: /src/api/services/agentLogService.js
+
+
+📄 /src/components/admin/PlansControlPanel.jsx
+   ❌ import ... from '../config/userPlanSettings'
+      Expected: /src/components/config/userPlanSettings
+
+   ❌ import ... from '../config/featuresList'
+      Expected: /src/components/config/featuresList
+
+
+📄 /src/components/chat/AgentSelector.jsx
+   ❌ import ... from '@/hooks/useProjectSystems'
+      Expected: /src/hooks/useProjectSystems
+
+
+📄 /src/components/layout/MainStage.jsx
+   ❌ import ... from '@/components/layout/TabBar'
+      Expected: /src/components/layout/TabBar
+
+
+📄 /src/components/specialists/flor-creator/ContextTuningBar.jsx
+   ❌ import ... from '@/components/icons/PranaIcons'
+      Expected: /src/components/icons/PranaIcons
+
+
+📄 /src/services/olly/OllySystemIntegration.js
+   ❌ import ... from '@/lib/db'
+      Expected: /src/lib/db
+
+   ❌ import ... from '@/lib/schema'
+      Expected: /src/lib/schema
+
+
+📄 /tests/apiClient.test.js
+   ❌ import ... from '../src/components/ui/use-toast.js'
+      Expected: /src/components/ui/use-toast.js
+
+
+📄 /tests/customFieldController.test.js
+   ❌ import ... from '../../src/api/controllers/customFieldController.js'
+      Expected: /workspaces/src/api/controllers/customFieldController.js
+
+
+📄 /tests/customFieldUtils.test.js
+   ❌ import ... from '../src/ai_services/utils/customFieldUtils.js'
+      Expected: /src/ai_services/utils/customFieldUtils.js
+
+
+📄 /tests/projectController.test.js
+   ❌ import ... from '../../src/api/controllers/projectController.js'
+      Expected: /workspaces/src/api/controllers/projectController.js
+
+
+📄 /tests/taskController.test.js
+   ❌ import ... from '../../src/api/controllers/taskController.js'
+      Expected: /workspaces/src/api/controllers/taskController.js
+
+
+📄 /tests/userController.test.js
+   ❌ import ... from '../../src/api/controllers/userController.js'
+      Expected: /workspaces/src/api/controllers/userController.js
+

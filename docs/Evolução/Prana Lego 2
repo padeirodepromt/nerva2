@@ -1,0 +1,105 @@
+PRANA V10: O Ecossistema Operacional e a Arquitetura de Departamentos
+Documento de Alinhamento Arquitetural e Comercial
+Sequência do documento "Prana Lego" (Ref: Commit 337ff66 e posteriores)
+
+1. O Marco Zero: De Monólito a Sistema Operacional (OS)
+O Prana deixou de ser uma ferramenta linear ou um simples "wrapper" de modelos de IA. Com a introdução do conceito "Lego", o Prana evoluiu para um Sistema Operacional de Gestão e Criação.
+
+O maior desafio desta fase não foi apenas escrever código, mas definir a Taxonomia correta. Precisávamos que a engenharia de software refletisse perfeitamente o modelo de negócios (SaaS), garantindo que o utilizador final entenda exatamente pelo que está a pagar, sem fricção.
+
+Após intensas revisões arquiteturais, chegamos à "Fórmula de Ouro", que ditará toda a construção de código e vendas daqui para a frente:
+
+DEPARTAMENTO = AGENTE + WORKSPACE
+SISTEMA = INTELIGÊNCIA (DB Isolado) + UI ESPECÍFICA
+TOOLS = NOVAS HABILIDADES (Backend)
+
+2. A Taxonomia Definitiva (A Fórmula de Ouro)
+Para garantir que não haja "código esparguete" e que as features possam ser vendidas como Add-ons (ou transformadas em Spin-offs no futuro), categorizamos todas as peças do Prana em 4 pilares estritos:
+
+A) O DEPARTAMENTO (O Produto Base / O Chão de Fábrica)
+É o plano principal que o utilizador assina. Ninguém "compra um prompt", as empresas contratam "Departamentos".
+
+A Regra: Todo Departamento nasce com 1 Agente Especialista e 1 Workspace Fundamental (A Mesa de Trabalho).
+
+Exemplos Comerciais: * Departamento de Desenvolvimento: Inclui a Agente Neo + a mesa TaskCodeWorkspace (para visualizar diffs de código).
+
+Departamento de Conteúdo: Inclui a Agente Flor + a mesa TaskContentWorkspace (O Modular Canvas de redação).
+
+B) O WORKSPACE (A Mesa de Trabalho / Frontend UI)
+O Workspace não tem banco de dados próprio e não retém estado. Ele é puramente o "Chassi" visual (Frontend) que renderiza o que o Agente ou o Sistema produzem.
+
+O Workspace é o local onde a colaboração humano-IA acontece lado a lado (O chat de um lado, o editor do outro).
+
+Ele adapta a sua interface de acordo com os Sistemas que o utilizador tem instalados.
+
+C) OS SISTEMAS (As Máquinas Premium / Bounded Contexts)
+É aqui que reside o alto valor agregado do SaaS. Um Sistema é um software completo embutido no Prana.
+
+A Regra: Um Sistema possui Banco de Dados Próprio, retém memória de longo prazo e injeta metodologias no Agente.
+
+A Venda: São vendidos como "Add-ons" por projeto ou mensalidade extra.
+
+Exemplos:
+
+Sistema BrandCode: Um cofre que guarda a Persona, Arquétipos e Palavras Proibidas. A Flor consulta este sistema antes de falar.
+
+Fábrica de Carrosséis: Um motor que força saídas JSON e altera o Workspace para desenhar grids visuais para o Instagram.
+
+Bioma / Sankalpa: Sistemas de inteligência vitalícia do Ash.
+
+D) AS TOOLS & PACKS (Os Superpoderes / Backend)
+Funções puras de backend (Stateless). O utilizador nunca vê as "Tools", ele vê a magia acontecer.
+
+Agrupamos Tools em Packs.
+
+Exemplos: PACK_TREND_HUNTER (dá à Flor a habilidade de ler o YouTube e extrair transcrições), PACK_NEO_PRO (permite ao Neo fazer code_grep no repositório).
+
+3. O Desacoplamento Absoluto (Arquitetura Event-Driven)
+Para que os Sistemas (como o BrandCode) possam virar produtos independentes no futuro (ex: brandcode.io), estabelecemos a lei do Encaixe Lego (Bounded Contexts).
+
+A partir da V10, os Sistemas não vivem misturados no "core" do Prana. Eles são construídos como Ilhas:
+
+Isolamento de Diretório: Tudo vive em src/modules/{nome-do-sistema}/ (ex: src/modules/brandcode).
+
+Banco de Dados Próprio: As tabelas do sistema não têm Foreign Keys rígidas para tabelas internas do Prana, usando apenas referências "moles" (como projectId ou userId em formato string).
+
+O Protocol Adapter (A Tomada): O Sistema não chama as funções do Prana diretamente. Ele usa um arquivo prana_adapter.js que "escuta" o Barramento de Eventos (Event Bus) do Prana.
+
+A Mágica: Se o Sistema for apagado da pasta amanhã, o Prana não quebra; a Agente Flor apenas passa a escrever conteúdos sem a precisão do BrandCode. O sistema degrada graciosamente.
+
+4. Para Onde Estamos Indo (O Roadmap Imediato)
+Com a arquitetura selada e o modelo de negócio perfeitamente alinhado, as nossas próximas missões de código são focadas em materializar o Departamento de Conteúdo em toda a sua glória.
+
+Passo 1: Construção do Sistema Mestre "BrandCode"
+O que é: O primeiro Sistema modular e stateful do Prana.
+
+Ação: Criação do banco de dados isolado (schema/brandcode.js) para armazenar: Inimigo Comum, Dores/Desejos do Avatar, Arquétipo e Glossário (Palavras de Poder/Proibidas).
+
+Integração: Criar o Adapter para que a Agente Flor faça um "SELECT" invisível nesta base de dados e injete essas regras no seu contexto (System Prompt) de forma dinâmica a cada mensagem.
+
+Passo 2: O "Modular Canvas" (A Mesa de Narrativa da Flor)
+O que é: A evolução do TaskContentWorkspace. Vamos abandonar o "editor de texto em branco" e adotar o Paradigma do Bloco (Storyboarding).
+
+Ação: Criar uma interface onde o texto devolvido pela IA não é uma string, mas sim um Array de JSONs renderizados como "Cartões" (Cards/Blocos).
+
+Benefícios:
+
+O utilizador pode arrastar parágrafos (Drag & Drop) para mudar a ordem da narrativa.
+
+Pode clicar num bloco e pedir: "Flor, reescreve só este gancho".
+
+Pode selecionar dois blocos e clicar em "Fundir" (Merge) para a IA criar uma transição perfeita.
+
+O Futuro desta Feature: Se a máquina já sabe ler blocos JSON e renderizar texto, no futuro bastará trocar o "CSS" para que o Prana se torne um Page Builder de Landing Pages modular.
+
+Passo 3: Tools de Caça a Tendências (Trend Studio)
+O que é: Injetar "olhos" e "ouvidos" na Agente Flor.
+
+Ação: Desenvolver ferramentas de backend (fetch_youtube_transcript, scrape_article) para que, quando o utilizador arrastar um link para o Modular Canvas, a Flor consiga extrair o DNA desse conteúdo para criar algo novo e autoral, mantendo a voz do BrandCode.
+
+5. Resumo Executivo para a Liderança (C-Level View)
+A transição para a arquitetura de Departamentos > Sistemas > Agentes transforma o Prana.
+
+Em vez de vendermos "Chatbots Inteligentes" (o que nos coloca em competição com o ChatGPT puro), passamos a vender Infraestrutura de Trabalho Autônomo. O cliente entra pela promessa do Agente (A funcionária brilhante), mas fica retido pelo Sistema (O banco de dados e a interface onde o trabalho da empresa passa a viver e a acumular valor histórico).
+
+O Prana V10 não está apenas pronto para escalar em código; ele está pronto para escalar como um Marketplace de Soluções B2B.

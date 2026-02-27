@@ -1,0 +1,107 @@
+Árvore do Processo: Do Input à Resposta Final
+1. Camada de Interface (A Semente)
+src/components/chat/SideChat.jsx: Recebe o texto bruto do usuário.
+
+src/hooks/usePranaChat.jsx: O hook que gerencia o estado da conversa, o histórico e a animação de "pensando".
+
+src/api/apiClient.js: O mensageiro que despacha o JSON para o servidor.
+
+2. Camada de Roteamento (O General)
+src/api/routes/agentRoutes.js: Define o endpoint (ex: /api/agents/interaction).
+
+src/api/controllers/agentController.js: O Orquestrador Geral. Ele recebe a requisição e para tudo para consultar os seus "Ministros" antes de falar com a IA.
+
+3. Camada de Governança (O Filtro de Realidade)
+
+src/services/billing/billingService.js: O controlador pergunta: "Este usuário pode pagar por essa interação?". Ele valida créditos e status da assinatura.
+
+src/config/plansConfig.js: Contém o "Livro de Regras". O controlador olha aqui para saber os limites do plano.
+
+src/services/modelsService.js: Traduz o plano em tecnologia. Se o plano é Semente, ele trava a saída em gemini-2.5-flash.
+
+4. Camada de Inteligência e Contexto (A Construção da Alma)
+src/api/agents/general/services/agentOrchestrator.js: O estrategista de prompts. Ele começa a empilhar as 5 Camadas de Contexto:
+
+Layer 4 (Persona): Busca a alma base no arquivo do agente (ex: src/api/agents/flor/flor.js).
+
+Layer 3 (Constituição): Chama o src/modules/brandcode/brandcode.api.js para injetar o DNA.
+
+Layer 5 (Especialização): Consulta o florTacticalRegistry.js para "vestir" a expertise (Médica, Fotógrafa, etc.).
+
+src/agents/agentCollaboration.js: Adiciona o contexto do que outros agentes andam a fazer no projeto.
+
+src/ai_services/ragService.js: O Bibliotecário. Faz a varredura no Nexus para trazer fatos de PDFs e documentos (Layer 2).
+
+5. Camada de Execução Técnica (Os Motores)
+src/ai_services/chatService.js: O motor de baixo nível. É aqui que o código faz a chamada real para as bibliotecas @google/generative-ai ou openai. Ele recebe o prompt "monstruoso" e devolve a resposta bruta.
+
+src/ai_services/toolService.js: Se a IA decidir que precisa fazer algo (como criar uma tarefa real ou agendar um evento), o chatService aciona o toolService para executar funções no backend do Prana.
+
+6. Camada de Saída e Registro (O Rastro)
+src/api/services/agentLogService.js: Grava tudo. Telemetria de impacto, custo de tokens e a resposta final para alimentar a CollaborationView.
+
+Response: O agentController devolve o JSON final para o SideChat.jsx, que renderiza a bolha de mensagem.
+
+graph TD
+    User((Input SideChat)) --> usePranaChat
+    usePranaChat --> agentController
+    
+    subgraph Governança
+        agentController --> billingService
+        billingService --> plansConfig
+        agentController --> modelsService
+    end
+    
+    subgraph Inteligência
+        agentController --> agentOrchestrator
+        agentOrchestrator --> AgentPersona[flor.js / ash.js]
+        agentOrchestrator --> BrandCode[DNA/Constituição]
+        agentOrchestrator --> TacticalRegistry[Expertise/Lugar]
+    end
+    
+    subgraph Dados
+        agentController --> agentCollaboration[Memória Enxame]
+        agentController --> ragService[Busca Nexus/PDFs]
+    end
+    
+    subgraph Core_IA
+        agentController --> chatService[Google / OpenAI]
+        chatService --> toolService[Executar Ações/Tasks]
+    end
+    
+    chatService --> Output((Resposta Sintonizada))
+    Output --> agentLogService[Telemetria/Logs]
+
+
+    Árvore de Manifestação: Do Input à Ação
+SideChat (UI): Captura a intenção do Herói (usuário).
+
+agentController (O General):
+
+Valida se o usuário pode agir (billingService).
+
+Define qual cérebro será usado (modelsService + plansConfig).
+
+Solicita a montagem da alma do agente (agentOrchestrator).
+
+Chama o chatService.run().
+
+chatService (O Motor de Raciocínio):
+
+Envia o Super-Prompt para o LLM (OpenAI ou Gemini).
+
+O Loop de Ferramentas: Se o LLM responder com uma "Tool Call" (ex: "quero criar uma tarefa"), o chatService não devolve isso para o controlador ainda. Ele intercepta essa chamada.
+
+toolService (A Mão Executora):
+
+O chatService pede ao toolService: "Execute a função 'createTask' com estes parâmetros".
+
+O toolService comunica com o banco de dados ou APIs externas e devolve o resultado para o chatService.
+
+Ciclo de Fechamento:
+
+O chatService envia o resultado da ferramenta de volta para o LLM para ele concluir a fala (ex: "Tarefa criada com sucesso, Arquiteto!").
+
+Só então o chatService devolve a resposta final para o agentController.
+
+agentLogService (O Historiador): O controlador grava o rastro completo e entrega a resposta para a UI.

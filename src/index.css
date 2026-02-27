@@ -1,0 +1,692 @@
+/* src/index.css
+   desc: Matriz Visual V13.1 (Correção & Estabilidade).
+   feat: Correção de SVGs (fill:none), adição do tema Wabi-Sabi Dark e ajustes globais.
+*/
+
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Vollkorn:ital,wght@0,400;0,600;0,700;1,400&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --radius: 0.75rem; /* 12px - Mais orgânico (V12) */
+    
+    /* Cores Prana Base */
+    --prana-orange: 217, 119, 6;   /* #D97706 */
+    --prana-earth: 120, 53, 15;    /* #78350F */
+    --prana-void: 12, 10, 9;       /* #0C0A09 */
+  }
+
+  /* === RESET GLOBAL DE SCROLLBARS === */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { 
+    background: rgba(120, 113, 108, 0.2); 
+    border-radius: 10px; 
+  }
+  ::-webkit-scrollbar-thumb:hover { 
+    background: rgba(var(--accent-rgb), 0.5); 
+  }
+  
+  .prana-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(var(--accent-rgb), 0.3) transparent;
+  }
+
+  body {
+    @apply bg-background text-foreground overflow-y-auto; /* Permite scroll vertical */
+    font-family: 'Space Grotesk', sans-serif;
+    background-color: rgb(var(--background));
+    background-image: var(--bg-gradient);
+    background-size: 400% 400%;
+    background-attachment: fixed;
+    animation: var(--animation-name, none) 30s ease-in-out infinite;
+  }
+
+  /* Tipografia Editorial */
+  h1, h2, h3, .font-serif { 
+    font-family: 'Vollkorn', serif; 
+    letter-spacing: -0.02em; 
+  }
+  code, pre, .font-mono { 
+    font-family: 'JetBrains Mono', monospace; 
+  }
+
+  /* === TEMAS (V12 - Mais Ricos) === */
+  
+  /* 1. PRANA DARK (Padrão) */
+  [data-theme='prana-dark'] {
+    --accent-rgb: 217, 119, 6;
+    --accent-dark-earthy: 120, 53, 15;
+    
+    --background: 12 10 9;
+    --foreground: 250 250 245;
+    
+    --card: 24 20 18;
+    --card-foreground: 250 250 245;
+    --popover: 24 20 18;
+    --popover-foreground: 250 250 245;
+    
+    --primary: 217 119 6;
+    --primary-foreground: 255 255 255;
+    --secondary: 43 35 30;
+    --secondary-foreground: 250 250 245;
+    --muted: 43 35 30;
+    --muted-foreground: 168 162 158;
+    --accent: 43 35 30;
+    --accent-foreground: 250 250 245;
+    --destructive: 127 29 29;
+    --destructive-foreground: 250 250 245;
+    
+    --border: 66 55 48;
+    --input: 43 35 30;
+    --ring: 217 119 6;
+
+    --bg-gradient: radial-gradient(circle at 50% 0%, #2a1b15 0%, #0c0a09 60%);
+    --texture-image: url('https://www.transparenttextures.com/patterns/cartographer.png');
+    --texture-opacity: 0.4;
+    --glass-opacity: 0.65;
+    --animation-name: bg-pan;
+  }
+
+  /* 2. WABI SABI DARK (Cartography - Adicionado) */
+  [data-theme='wabi-sabi-dark'] {
+    --accent-rgb: 217, 119, 6;
+    --accent-dark-earthy: 120, 53, 15;
+    
+    --background: 24 18 15;
+    --foreground: 250 250 245;
+    
+    --card: 32 24 20;
+    --card-foreground: 250 250 245;
+    --popover: 32 24 20;
+    --popover-foreground: 250 250 245;
+    
+    --primary: 217 119 6;
+    --primary-foreground: 255 255 255;
+    --secondary: 43 35 30;
+    --secondary-foreground: 250 250 245;
+    --muted: 43 35 30;
+    --muted-foreground: 168 162 158;
+    --accent: 43 35 30;
+    --accent-foreground: 250 250 245;
+    --destructive: 127 29 29;
+    --destructive-foreground: 250 250 245;
+    
+    --border: 66 55 48;
+    --input: 43 35 30;
+    --ring: 217 119 6;
+
+    --bg-gradient: linear-gradient(135deg, #18120f 0%, #0c0a09 100%);
+    --texture-image: url('https://www.transparenttextures.com/patterns/cartographer.png');
+    --texture-opacity: 0.4;
+    --glass-opacity: 0.65;
+    --animation-name: bg-pan;
+  }
+
+  /* 3. WABI SABI LIGHT (Papel de Arroz) */
+  [data-theme='wabi-sabi-light'] {
+    --accent-rgb: 217, 119, 6;
+    --accent-dark-earthy: 146 64 14;
+    
+    --background: 249 247 241;
+    --foreground: 67 56 53;
+    
+    --card: 253 251 245;
+    --card-foreground: 67 56 53;
+    --popover: 255 255 255;
+    --popover-foreground: 67 56 53;
+    
+    --primary: 217 119 6;
+    --primary-foreground: 255 255 255;
+    --secondary: 231 229 228;
+    --secondary-foreground: 67 56 53;
+    --muted: 231 229 228;
+    --muted-foreground: 120 113 108;
+    --accent: 245 245 244;
+    --accent-foreground: 67 56 53;
+    --destructive: 185 28 28;
+    --destructive-foreground: 255 255 255;
+    
+    --border: 214 211 209;
+    --input: 231 229 228;
+    --ring: 217 119 6;
+
+    --bg-gradient: linear-gradient(135deg, #fdfbf7 0%, #f2ede4 100%);
+    --texture-image: url('https://www.transparenttextures.com/patterns/paper.png');
+    --texture-opacity: 0.6;
+    --animation-name: bg-pan;
+    --glass-opacity: 0.85;
+  }
+
+  /* 4. CONCRETE GRAY (Concreto Moderno) */
+  [data-theme='concrete-gray'] {
+    --accent-rgb: 217, 119, 6;
+    --accent-dark-earthy: 180, 100, 50;
+    
+    --background: 42 42 42;
+    --foreground: 220 220 220;
+    
+    --card: 52 52 52;
+    --card-foreground: 220 220 220;
+    --popover: 52 52 52;
+    --popover-foreground: 220 220 220;
+    
+    --primary: 217 119 6;
+    --primary-foreground: 0 0 0;
+    --secondary: 80 80 80;
+    --secondary-foreground: 220 220 220;
+    --muted: 70 70 70;
+    --muted-foreground: 150 150 150;
+    --accent: 217 119 6;
+    --accent-foreground: 42 42 42;
+    
+    --border: 80 80 80;
+    --input: 60 60 60;
+    --ring: 217 119 6;
+
+    --bg-gradient: linear-gradient(135deg, #3a3a3a 0%, #2d2d2d 100%);
+    --texture-image: url('https://www.transparenttextures.com/patterns/concrete.png');
+    --texture-opacity: 0.4;
+    --glass-opacity: 0.80;
+    --animation-name: bg-pan;
+  }
+
+  /* 5. GRAY & ORANGE (Cinza e Laranja) */
+  [data-theme='gray-orange'] {
+    --accent-rgb: 217, 119, 6;
+    --accent-dark-earthy: 217, 119, 6;
+    
+    --background: 45 45 45;
+    --foreground: 230 230 230;
+    
+    --card: 58 58 58;
+    --card-foreground: 230 230 230;
+    --popover: 58 58 58;
+    --popover-foreground: 230 230 230;
+    
+    --primary: 217 119 6;
+    --primary-foreground: 255 255 255;
+    --secondary: 100 100 100;
+    --secondary-foreground: 230 230 230;
+    --muted: 85 85 85;
+    --muted-foreground: 160 160 160;
+    --accent: 217 119 6;
+    --accent-foreground: 255 255 255;
+    
+    --border: 100 100 100;
+    --input: 70 70 70;
+    --ring: 217 119 6;
+
+    --bg-gradient: linear-gradient(135deg, #2d2d2d 0%, #3a3a3a 50%, #D97706 100%);
+    --texture-image: url('https://www.transparenttextures.com/patterns/concrete.png');
+    --texture-opacity: 0.3;
+    --glass-opacity: 0.82;
+    --animation-name: bg-pan;
+  }
+
+  /* 6. LINEN CREAM (Linho) */
+  [data-theme='linen-cream'] {
+    --accent-rgb: 180, 100, 50;
+    --accent-dark-earthy: 150, 80, 40;
+    
+    --background: 245 241 237;
+    --foreground: 45 40 35;
+    
+    --card: 250 248 245;
+    --card-foreground: 45 40 35;
+    --popover: 250 248 245;
+    --popover-foreground: 45 40 35;
+    
+    --primary: 180 100 50;
+    --primary-foreground: 255 255 255;
+    --secondary: 200 180 160;
+    --secondary-foreground: 45 40 35;
+    --muted: 220 210 200;
+    --muted-foreground: 100 90 75;
+    --accent: 180 100 50;
+    --accent-foreground: 255 255 255;
+    
+    --border: 220 200 180;
+    --input: 240 235 230;
+    --ring: 180 100 50;
+
+    --bg-gradient: linear-gradient(135deg, #f5f1ed 0%, #ede6df 100%);
+    --texture-image: url('https://www.transparenttextures.com/patterns/linen.png');
+    --texture-opacity: 0.5;
+    --glass-opacity: 0.80;
+    --animation-name: none;
+  }
+}
+
+@layer components {
+  /* === TEXTURAS & MATERIAIS === */
+  
+  /* Vidro Orgânico (Padrão) */
+  .glass-effect {
+    @apply backdrop-blur-xl shadow-lg relative;
+    background-color: rgba(var(--card), var(--glass-opacity));
+    border: 1px solid rgba(var(--foreground), 0.08);
+  }
+
+  /* [FIX V13] Sidebar Glass Restaurado (Vital para o Layout) */
+  .prana-sidebar-glass {
+    @apply backdrop-blur-lg relative;
+    background-color: rgba(var(--background), 0.35); /* Semi-transparente com textura visível */
+    border-right: 1px solid rgba(var(--border), 0.2);
+    isolation: isolate;
+  }
+
+  /* Superfície Elevada (Modais) */
+  .prana-surface-elevated {
+    @apply backdrop-blur-2xl shadow-2xl relative;
+    background-color: rgba(var(--card), 0.9);
+    border: 1px solid rgba(var(--accent-rgb), 0.2);
+    box-shadow: 0 20px 50px -12px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(var(--accent-rgb), 0.1);
+  }
+
+  /* Aplicação de Textura */
+  .glass-effect::before, .prana-surface-elevated::before, .prana-sidebar-glass::before {
+    content: ""; position: absolute; inset: 0;
+    background-image: var(--texture-image);
+    opacity: var(--texture-opacity);
+    pointer-events: none; z-index: -1;
+    mix-blend-mode: overlay;
+    background-repeat: repeat;
+    border-radius: inherit;
+  }
+
+  /* === INTERAÇÕES VIVAS === */
+  
+  .prana-focus-ring:focus-visible, .prana-focus-ring:focus-within {
+    outline: none;
+    border-color: rgb(var(--accent-rgb));
+    box-shadow: 0 0 0 4px rgba(var(--accent-rgb), 0.15);
+    transition: all 0.3s ease;
+  }
+
+  .glow-effect {
+    background-color: rgb(var(--accent-rgb)) !important;
+    color: white !important;
+    box-shadow: 0 0 15px rgba(var(--accent-rgb), 0.3), 0 0 5px rgba(var(--accent-rgb), 0.5);
+    transition: all 0.3s ease;
+    border: none;
+  }
+  .glow-effect:hover {
+    filter: brightness(1.1);
+    box-shadow: 0 0 25px rgba(var(--accent-rgb), 0.5), 0 0 10px rgba(var(--accent-rgb), 0.6);
+    transform: translateY(-1px);
+  }
+
+  /* [FIX V13] Correção do Logo SVG (Preenchimento) */
+  .logo-fill path, .logo-fill circle {
+    fill: currentColor !important;
+    stroke: none !important;
+  }
+
+  /* Animações de Ícones */
+  .icon-hero { 
+    transition: all 0.5s ease; 
+    stroke: currentColor; 
+  }
+  .icon-hero[data-active="true"], .group:hover .icon-hero {
+    stroke: rgb(var(--accent-rgb));
+    filter: drop-shadow(0 0 6px rgba(var(--accent-rgb), 0.4));
+  }
+  
+  .icon-hero-detalhe {
+    fill: currentColor !important;
+    stroke: none !important;
+  }
+
+  /* [FIX V13.1] Animação Tracejada (Tracejado MAIOR) + CORREÇÃO DE FILL */
+  .icon-loader-wave {
+    stroke-dasharray: 25 15;
+    fill: none !important;
+    stroke: currentColor;
+    animation: flow-dash 1.2s linear infinite;
+  }
+  
+  .icon-nature-energia {
+    opacity: 0.5;
+    fill: none !important;
+    stroke: currentColor;
+    animation: flow-dash 30s linear infinite;
+  }
+  
+  .icon-nature-base {
+    fill: none !important;
+    stroke: currentColor;
+  }
+
+  .icon-ativo .icon-nature-energia {
+    stroke: rgb(var(--accent-rgb));
+    opacity: 1;
+    animation: flow-dash 4s linear infinite;
+  }
+}
+
+/* Keyframes */
+@keyframes bg-pan {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes flow-dash {
+  to { stroke-dashoffset: -40; }
+}
+
+/* === ICON ANIMATIONS (Phase 8) === */
+
+/* Sankalpa Icon Toggle Animation (Outline ↔ Solid) */
+@keyframes sankalpa-toggle {
+  0% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.7; transform: scale(0.95); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+.icon-sankalpa-toggle {
+  animation: sankalpa-toggle 0.4s ease-in-out;
+}
+
+/* Icon Scale Pulse (Used for emphasizing actions) */
+@keyframes icon-pulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.1); opacity: 0.8; }
+}
+
+.icon-pulse {
+  animation: icon-pulse 2s ease-in-out infinite;
+}
+
+/* Icon Bounce (For notifications and alerts) */
+@keyframes icon-bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+
+.icon-bounce {
+  animation: icon-bounce 1s ease-in-out infinite;
+}
+
+/* Icon Spin (For loading states) */
+@keyframes icon-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.icon-spin {
+  animation: icon-spin 1s linear infinite;
+}
+
+/* Icon Fade In (For appearing elements) */
+@keyframes icon-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.icon-fade-in {
+  animation: icon-fade-in 0.3s ease-out;
+}
+
+/* Icon Fade Out (For disappearing elements) */
+@keyframes icon-fade-out {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+.icon-fade-out {
+  animation: icon-fade-out 0.3s ease-out;
+}
+
+/* Icon Shake (For errors or warnings) */
+@keyframes icon-shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-3px); }
+  75% { transform: translateX(3px); }
+}
+
+.icon-shake {
+  animation: icon-shake 0.4s ease-in-out;
+}
+
+/* Icon Glow (For active/selected states) */
+@keyframes icon-glow {
+  0%, 100% { 
+    filter: drop-shadow(0 0 4px rgba(var(--accent-rgb), 0.3));
+  }
+  50% { 
+    filter: drop-shadow(0 0 8px rgba(var(--accent-rgb), 0.6));
+  }
+}
+
+.icon-glow {
+  animation: icon-glow 1.5s ease-in-out infinite;
+}
+
+/* Icon Slide In (For tooltips and popovers) */
+@keyframes icon-slide-in-right {
+  from { 
+    opacity: 0; 
+    transform: translateX(-8px);
+  }
+  to { 
+    opacity: 1; 
+    transform: translateX(0);
+  }
+}
+
+.icon-slide-in-right {
+  animation: icon-slide-in-right 0.3s ease-out;
+}
+
+/* Icon Slide In (For left direction) */
+@keyframes icon-slide-in-left {
+  from { 
+    opacity: 0; 
+    transform: translateX(8px);
+  }
+  to { 
+    opacity: 1; 
+    transform: translateX(0);
+  }
+}
+
+.icon-slide-in-left {
+  animation: icon-slide-in-left 0.3s ease-out;
+}
+
+/* Icon Heart Beat (For favorites and important items) */
+@keyframes icon-heartbeat {
+  0%, 100% { transform: scale(1); }
+  25% { transform: scale(1.15); }
+  50% { transform: scale(1); }
+}
+
+.icon-heartbeat {
+  animation: icon-heartbeat 1.3s ease-in-out infinite;
+}
+
+/* Icon Flip (For toggles and state changes) */
+@keyframes icon-flip {
+  0% { transform: perspective(400px) rotateY(0); }
+  100% { transform: perspective(400px) rotateY(360deg); }
+}
+
+.icon-flip {
+  animation: icon-flip 0.6s ease-in-out;
+}
+
+/* Utility Classes for Icon Animations */
+.animate-icon-spin {
+  animation: icon-spin 1s linear infinite;
+}
+
+.animate-icon-pulse {
+  animation: icon-pulse 2s ease-in-out infinite;
+}
+
+.animate-icon-bounce {
+  animation: icon-bounce 1s ease-in-out infinite;
+}
+
+.animate-icon-glow {
+  animation: icon-glow 1.5s ease-in-out infinite;
+}
+
+.animate-icon-shake {
+  animation: icon-shake 0.4s ease-in-out;
+}
+
+.animate-icon-heartbeat {
+  animation: icon-heartbeat 1.3s ease-in-out infinite;
+}
+
+/* === CARDS COMPOSITION SYSTEM === */
+/* Sistema de composição visual para cards do Dashboard */
+
+/* Card com Glass Effect Puro (Sem textura adicional) */
+.card-glass-pure {
+  @apply backdrop-blur-xl shadow-lg relative rounded-3xl;
+  background-color: rgba(var(--card), var(--glass-opacity));
+  border: 1px solid rgba(var(--foreground), 0.08);
+  transition: all 0.3s ease;
+}
+
+.card-glass-pure:hover {
+  border-color: rgba(var(--accent-rgb), 0.15);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+}
+
+/* Card com Textura Leve (SVG Noise) */
+.card-textured {
+  @apply backdrop-blur-lg shadow-lg relative rounded-3xl p-8 overflow-hidden;
+  background-color: rgba(var(--card), 0.95);
+  border: 1px solid rgba(var(--foreground), 0.1);
+  transition: all 0.3s ease;
+}
+
+.card-textured::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  opacity: 0.04;
+  pointer-events: none;
+  z-index: -1;
+  mix-blend-mode: overlay;
+  border-radius: inherit;
+}
+
+.card-textured:hover {
+  border-color: rgba(var(--accent-rgb), 0.2);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+/* Card com Elevação Forte (Modais/Destaque) */
+.card-elevated {
+  @apply backdrop-blur-2xl shadow-2xl relative rounded-3xl p-8 overflow-hidden;
+  background-color: rgba(var(--card), 0.98);
+  border: 1px solid rgba(var(--accent-rgb), 0.2);
+  box-shadow: 0 20px 50px -12px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(var(--accent-rgb), 0.1);
+}
+
+/* Card Minimalista (Sem efeitos) */
+.card-minimal {
+  @apply rounded-3xl p-8 relative transition-all;
+  background-color: rgb(var(--card));
+  border: 1px solid rgb(var(--border));
+}
+
+.card-minimal:hover {
+  border-color: rgba(var(--accent-rgb), 0.3);
+  transform: translateY(-2px);
+}
+
+/* Resposta ao Tema Light */
+[data-theme*='light'] .card-glass-pure,
+[data-theme*='light'] .card-textured,
+[data-theme*='light'] .card-elevated {
+  @apply shadow-sm;
+  background-color: rgba(var(--card), 0.95);
+  backdrop-filter: blur(6px);
+}
+
+[data-theme*='light'] .card-glass-pure {
+  border-color: rgba(var(--foreground), 0.15);
+}
+
+[data-theme*='light'] .card-textured::before {
+  opacity: 0.08;
+}
+
+/* Resposta ao Tema Dark */
+[data-theme*='dark'] .card-glass-pure {
+  @apply shadow-lg;
+  background-color: rgba(var(--card), var(--glass-opacity));
+}
+
+[data-theme*='dark'] .card-textured {
+  background-color: rgba(var(--card), 0.85);
+}
+
+/* === ESTRATÉGIA DE COMPOSITION === */
+/* Padrão de alternância para melhor legibilidade visual */
+
+/* Linha 1: Calendário (Glass) + Rotinas (Textured) + Ritualização (Glass) */
+.card-line-1-item-1 { @apply card-glass-pure; }
+.card-line-1-item-2 { @apply card-textured; }
+.card-line-1-item-3 { @apply card-glass-pure; }
+
+/* Linha 2: Astrologia (Elevated) + Energia (Textured) + Humor (Glass) */
+.card-line-2-item-1 { @apply card-elevated; }
+.card-line-2-item-2 { @apply card-textured; }
+.card-line-2-item-3 { @apply card-glass-pure; }
+
+/* Linha 3: Tags (Textured 2col) + Ash/Ciclo (Glass 1col) */
+.card-line-3-item-1 { @apply card-textured; }
+.card-line-3-item-2 { @apply card-glass-pure; }
+
+/* Card Principal (Sankalpa + CeuAgora) */
+.card-hero { @apply card-elevated; }
+
+/* Card Fluxo Prioritário */
+.card-flux { @apply card-glass-pure; }
+
+/* Card Diário */
+.card-diary { @apply card-minimal; }
+
+/* === REACT FLOW CUSTOMIZATIONS (V8 Neural Garden) === */
+
+/* Remove a logo do React Flow (se a prop proOptions falhar) */
+.react-flow__attribution {
+  display: none !important;
+}
+
+/* Garante que o container ocupe o espaço correto */
+.react-flow {
+  background: transparent !important;
+}
+
+/* Suaviza as arestas das conexões */
+.react-flow__edge-path {
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* Cursor de Grab ao arrastar o canvas */
+.react-flow__pane {
+  cursor: grab;
+}
+.react-flow__pane.dragging {
+  cursor: grabbing;
+}
+
+/* Remove outline azul padrão ao selecionar nodes */
+.react-flow__node:focus, .react-flow__node-customNode:focus {
+  outline: none !important;
+}

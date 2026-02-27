@@ -1,0 +1,252 @@
+[
+  {
+    "severity": "INFO",
+    "file": "/OLLY_GUIA_VISUAL_CODIGO.js",
+    "note": "Documentation file - not active code",
+    "imports": [
+      {
+        "broken_import": "import ... from './App'",
+        "import_path": "./App",
+        "expected_path": "/App",
+        "issue": "App.jsx not in root directory"
+      }
+    ]
+  },
+  {
+    "severity": "INFO",
+    "file": "/OLLY_QUICK_START.js",
+    "note": "Documentation/guide file - not active code",
+    "imports": [
+      {
+        "broken_import": "import ... from './App'",
+        "import_path": "./App",
+        "expected_path": "/App",
+        "issue": "App.jsx not in root directory"
+      }
+    ]
+  },
+  {
+    "severity": "CRITICAL",
+    "file": "/src/agents/agentCollaboration.js",
+    "category": "Agent Code",
+    "imports": [
+      {
+        "broken_import": "import { isAgentEnabledForPlan } from '@/api/services/taskService'",
+        "import_path": "@/api/services/taskService",
+        "expected_path": "/src/api/services/taskService",
+        "issue": "File does not exist - needs to be created",
+        "fix": "Create file /src/api/services/taskService.js or update import"
+      }
+    ]
+  },
+  {
+    "severity": "CRITICAL",
+    "file": "/src/api/agents/general/tools/integrationTools.js",
+    "category": "Agent Tools",
+    "imports": [
+      {
+        "broken_import": "import ... from '../../../../services/emailService.js'",
+        "import_path": "../../../../services/emailService.js",
+        "expected_path": "/src/services/emailService.js",
+        "issue": "File does not exist - needs to be created",
+        "fix": "Create file /src/services/emailService.js or use /src/api/services/emailService.js"
+      }
+    ]
+  },
+  {
+    "severity": "CRITICAL",
+    "file": "/src/api/controllers/agentController.js",
+    "category": "API Controller",
+    "imports": [
+      {
+        "broken_import": "import ... from '../services/billing/billingService.js'",
+        "import_path": "../services/billing/billingService.js",
+        "expected_path": "/src/api/services/billing/billingService.js",
+        "issue": "File does not exist",
+        "fix": "Create /src/api/services/billing/billingService.js or check if file exists elsewhere"
+      },
+      {
+        "broken_import": "import ... from '../services/modelsService.js'",
+        "import_path": "../services/modelsService.js",
+        "expected_path": "/src/api/services/modelsService.js",
+        "issue": "File does not exist",
+        "fix": "Create /src/api/services/modelsService.js"
+      },
+      {
+        "broken_import": "import ... from '../services/agentLogService.js'",
+        "import_path": "../services/agentLogService.js",
+        "expected_path": "/src/api/services/agentLogService.js",
+        "issue": "File does not exist",
+        "fix": "Create /src/api/services/agentLogService.js"
+      }
+    ]
+  },
+  {
+    "severity": "CRITICAL",
+    "file": "/src/components/admin/PlansControlPanel.jsx",
+    "category": "React Component",
+    "imports": [
+      {
+        "broken_import": "import ... from '../config/userPlanSettings'",
+        "import_path": "../config/userPlanSettings",
+        "expected_path": "/src/components/config/userPlanSettings",
+        "issue": "Configuration file does not exist",
+        "fix": "Create /src/components/config/userPlanSettings.js/jsx or move config file"
+      },
+      {
+        "broken_import": "import ... from '../config/featuresList'",
+        "import_path": "../config/featuresList",
+        "expected_path": "/src/components/config/featuresList",
+        "issue": "Configuration file does not exist",
+        "fix": "Create /src/components/config/featuresList.js/jsx or import from correct location"
+      }
+    ]
+  },
+  {
+    "severity": "CRITICAL",
+    "file": "/src/components/chat/AgentSelector.jsx",
+    "category": "React Component",
+    "imports": [
+      {
+        "broken_import": "import ... from '@/hooks/useProjectSystems'",
+        "import_path": "@/hooks/useProjectSystems",
+        "expected_path": "/src/hooks/useProjectSystems",
+        "issue": "Custom hook does not exist",
+        "fix": "Create /src/hooks/useProjectSystems.js or use existing hook"
+      }
+    ]
+  },
+  {
+    "severity": "CRITICAL",
+    "file": "/src/components/layout/MainStage.jsx",
+    "category": "React Component - Layout",
+    "imports": [
+      {
+        "broken_import": "import ... from '@/components/layout/TabBar'",
+        "import_path": "@/components/layout/TabBar",
+        "expected_path": "/src/components/layout/TabBar",
+        "issue": "Component does not exist",
+        "fix": "Create /src/components/layout/TabBar.jsx or import similar existing component"
+      }
+    ]
+  },
+  {
+    "severity": "CRITICAL",
+    "file": "/src/components/specialists/flor-creator/ContextTuningBar.jsx",
+    "category": "React Component - Specialist",
+    "imports": [
+      {
+        "broken_import": "import ... from '@/components/icons/PranaIcons'",
+        "import_path": "@/components/icons/PranaIcons",
+        "expected_path": "/src/components/icons/PranaIcons",
+        "issue": "Icons component or mapping does not exist",
+        "fix": "Check if should use PranaLandscapeIcons instead or create PranaIcons"
+      }
+    ]
+  },
+  {
+    "severity": "CRITICAL",
+    "file": "/src/services/olly/OllySystemIntegration.js",
+    "category": "Service - Integration",
+    "imports": [
+      {
+        "broken_import": "import ... from '@/lib/db'",
+        "import_path": "@/lib/db",
+        "expected_path": "/src/lib/db",
+        "issue": "Using wrong path for database - should be /src/db/index.js",
+        "fix": "Change to import from '@/db/index' or './../../db/index.js'"
+      },
+      {
+        "broken_import": "import ... from '@/lib/schema'",
+        "import_path": "@/lib/schema",
+        "expected_path": "/src/lib/schema",
+        "issue": "Using wrong path for schema - should be /src/db/schema.js",
+        "fix": "Change to import from '@/db/schema' or './../../db/schema.js'"
+      }
+    ]
+  },
+  {
+    "severity": "HIGH",
+    "file": "/tests/apiClient.test.js",
+    "category": "Test File",
+    "imports": [
+      {
+        "broken_import": "import ... from '../src/components/ui/use-toast.js'",
+        "import_path": "../src/components/ui/use-toast.js",
+        "expected_path": "/src/components/ui/use-toast.js",
+        "issue": "Incorrect relative path from /tests/",
+        "fix": "Change path from '../src/...' to '../src/...'"
+      }
+    ]
+  },
+  {
+    "severity": "HIGH",
+    "file": "/tests/customFieldController.test.js",
+    "category": "Test File",
+    "imports": [
+      {
+        "broken_import": "import ... from '../../src/api/controllers/customFieldController.js'",
+        "import_path": "../../src/api/controllers/customFieldController.js",
+        "expected_path": "/workspaces/src/api/controllers/customFieldController.js",
+        "issue": "Incorrect relative path - too many ../ for /tests/ location",
+        "fix": "Change from '../../src/...' to '../src/...'"
+      }
+    ]
+  },
+  {
+    "severity": "HIGH",
+    "file": "/tests/customFieldUtils.test.js",
+    "category": "Test File",
+    "imports": [
+      {
+        "broken_import": "import ... from '../src/ai_services/utils/customFieldUtils.js'",
+        "import_path": "../src/ai_services/utils/customFieldUtils.js",
+        "expected_path": "/src/ai_services/utils/customFieldUtils.js",
+        "issue": "File path might be incorrect or file doesn't exist",
+        "fix": "Verify if /src/ai_services/utils/customFieldUtils.js exists"
+      }
+    ]
+  },
+  {
+    "severity": "HIGH",
+    "file": "/tests/projectController.test.js",
+    "category": "Test File",
+    "imports": [
+      {
+        "broken_import": "import ... from '../../src/api/controllers/projectController.js'",
+        "import_path": "../../src/api/controllers/projectController.js",
+        "expected_path": "/workspaces/src/api/controllers/projectController.js",
+        "issue": "Incorrect path - too many directory levels",
+        "fix": "Change from '../../src/...' to '../src/...'"
+      }
+    ]
+  },
+  {
+    "severity": "HIGH",
+    "file": "/tests/taskController.test.js",
+    "category": "Test File",
+    "imports": [
+      {
+        "broken_import": "import ... from '../../src/api/controllers/taskController.js'",
+        "import_path": "../../src/api/controllers/taskController.js",
+        "expected_path": "/workspaces/src/api/controllers/taskController.js",
+        "issue": "Incorrect path - too many directory levels",
+        "fix": "Change from '../../src/...' to '../src/...'"
+      }
+    ]
+  },
+  {
+    "severity": "HIGH",
+    "file": "/tests/userController.test.js",
+    "category": "Test File",
+    "imports": [
+      {
+        "broken_import": "import ... from '../../src/api/controllers/userController.js'",
+        "import_path": "../../src/api/controllers/userController.js",
+        "expected_path": "/workspaces/src/api/controllers/userController.js",
+        "issue": "Incorrect path - too many directory levels",
+        "fix": "Change from '../../src/...' to '../src/...'"
+      }
+    ]
+  }
+]

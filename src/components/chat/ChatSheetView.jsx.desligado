@@ -1,0 +1,193 @@
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import { 
+  Table, TableBody, TableCell, TableHead, TableHeader, TableRow 
+} from '@/components/ui/table';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
+import { Search, CheckCircle2, MoreHorizontal, Calendar, Loader2, Maximize2, Minimize2 } from '@/components/icons/PranaLandscapeIcons';
+import { 
+  DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger 
+} from '@/components/ui/dropdown-menu';
+import { format } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
+import { toast } from 'sonner';
+
+// API & Componentes
+import { Task } from '@/api/entities';
+import PranaFormModal from '@/components/forms/PranaFormModal';
+
+const STATUS_COLORS = {
+  'a_fazer': 'text-slate-400 border-slate-500/30 bg-slate-500/5',
+  'em_progresso': 'text-blue-400 border-blue-500/30 bg-blue-500/5',
+  'concluido': 'text-emerald-400 border-emerald-500/30 bg-emerald-500/5',
+  'bloqueado': 'text-red-400 border-red-500/30 bg-red-500/5',
+};
+
+export default function ChatSheetView({ data, projectId, height = "500px" }) {
+  const [tasks, setTasks] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [isFullScreen, setIsFullScreen] = useState(false); // Estado de Tela Cheia
+  
+  // Modal
+  const [modalOpen, setModalOpen] = useState(false);
+  const [editingTaskId, setEditingTaskId] = useState(null);
+
+  const safeProjectId = projectId || data?.project?.id;
+
+  const loadTasks = useCallback(async () => {
+    if (data && data.tasks) {
+        setTasks(data.tasks);
+        return;
+    }
+    if (!safeProjectId) {
+        setLoading(false);
+        return;
+    }
+    setLoading(true);
+    try {
+      const fetchedData = await Task.filter({ project_id: safeProjectId });
+      setTasks(fetchedData);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setLoading(false);
+    }
+  }, [safeProjectId, data]);
+
+  useEffect(() => {
+    loadTasks();
+  }, [loadTasks]);
+
+  const filteredTasks = useMemo(() => {
+    if (!searchTerm) return tasks;
+    return tasks.filter(t => t.name.toLowerCase().includes(searchTerm.toLowerCase()));
+  }, [tasks, searchTerm]);
+
+  const toggleStatus = async (task) => {
+      const newStatus = task.status === 'concluido' ? 'a_fazer' : 'concluido';
+      setTasks(prev => prev.map(t => t.id === task.id ? { ...t, status: newStatus } : t));
+      try { await Task.update(task.id, { status: newStatus }); } 
+      catch (e) { toast.error("Erro ao salvar status"); loadTasks(); }
+  };
+
+  // Estilo "Breakout" (Quebra a bolha do chat quando expandido)
+  const containerStyle = isFullScreen 
+    ? { position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', zIndex: 50, borderRadius: 0 }
+    : { height, width: '100%', position: 'relative' };
+
+  return (
+    <div 
+        style={containerStyle} 
+        className={`flex flex-col bg-black/20 border-white/10 overflow-hidden transition-all duration-300 ${isFullScreen ? 'bg-[#0c0a09] z-[100]' : 'rounded-xl border'}`}
+    >
+      
+      {/* Header da Planilha */}
+      <div className="flex items-center justify-between p-2 bg-white/5 border-b border-white/5">
+         <div className="flex items-center gap-2 flex-1">
+             <div className="flex items-center gap-2 bg-black/20 px-2 py-1 rounded-md border border-white/5 w-full max-w-[200px]">
+                <Search className="w-3 h-3 text-muted-foreground" />
+                <Input 
+                  placeholder="Filtrar lista..." 
+                  className="border-0 h-5 bg-transparent text-xs focus-visible:ring-0 p-0 w-full placeholder:text-muted-foreground/50"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+             </div>
+             <Badge variant="secondary" className="text-[10px] h-5 bg-white/10 text-muted-foreground">
+                {filteredTasks.length}
+             </Badge>
+         </div>
+         
+         {/* Botão Mágico de Expansão */}
+         <Button 
+            variant="ghost" 
+            size="icon" 
+            onClick={() => setIsFullScreen(!isFullScreen)}
+            className="h-7 w-7 text-muted-foreground hover:text-accent hover:bg-white/10"
+            title={isFullScreen ? "Minimizar para Chat" : "Expandir Tela Cheia"}
+         >
+            {isFullScreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
+         </Button>
+      </div>
+
+      {/* Tabela */}
+      <div className="flex-1 overflow-auto custom-scrollbar bg-black/20">
+        <Table>
+          <TableHeader className="bg-white/5 sticky top-0 z-10 backdrop-blur-sm">
+            <TableRow className="border-white/5 hover:bg-transparent">
+              <TableHead className="h-8 text-[10px] uppercase tracking-wider w-[50%] font-semibold text-muted-foreground">Tarefa</TableHead>
+              <TableHead className="h-8 text-[10px] uppercase tracking-wider w-[20%] font-semibold text-muted-foreground">Status</TableHead>
+              <TableHead className="h-8 text-[10px] uppercase tracking-wider w-[20%] font-semibold text-muted-foreground">Prazo</TableHead>
+              <TableHead className="h-8 text-[10px] w-[10%]"></TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {loading ? (
+               <TableRow><TableCell colSpan={4} className="text-center py-10 text-muted-foreground">
+                   <Loader2 className="w-5 h-5 animate-spin mx-auto mb-2 text-accent" />
+                   <span className="text-xs">Carregando dados...</span>
+               </TableCell></TableRow>
+            ) : filteredTasks.length === 0 ? (
+               <TableRow><TableCell colSpan={4} className="text-center py-10 text-xs text-muted-foreground opacity-50">Lista vazia.</TableCell></TableRow>
+            ) : (
+               filteredTasks.map((task) => (
+                 <TableRow key={task.id} className="border-white/5 hover:bg-white/5 group transition-colors">
+                   <TableCell className="py-2">
+                      <div className="flex items-center gap-3">
+                         <button 
+                            onClick={() => toggleStatus(task)} 
+                            className={`w-4 h-4 rounded-full border flex items-center justify-center transition-all ${task.status === 'concluido' ? 'bg-emerald-500/20 border-emerald-500 text-emerald-500' : 'border-white/20 hover:border-emerald-500 hover:bg-emerald-500/10 text-transparent'}`}
+                         >
+                             <CheckCircle2 className="w-3 h-3" />
+                         </button>
+                         <span className={`text-xs font-medium truncate max-w-[300px] ${task.status === 'concluido' ? 'line-through text-muted-foreground decoration-muted-foreground/50' : 'text-foreground'}`}>
+                             {task.name}
+                         </span>
+                      </div>
+                   </TableCell>
+                   <TableCell className="py-2">
+                      <Badge variant="outline" className={`text-[9px] h-4 px-1.5 font-medium border-0 ${STATUS_COLORS[task.status] || STATUS_COLORS['a_fazer']}`}>
+                         {task.status.replace('_', ' ')}
+                      </Badge>
+                   </TableCell>
+                   <TableCell className="py-2">
+                      {task.due_date ? (
+                          <span className="text-[10px] text-muted-foreground flex items-center gap-1.5">
+                              <Calendar className="w-3 h-3 opacity-50" /> {format(new Date(task.due_date), "dd/MM", { locale: ptBR })}
+                          </span>
+                      ) : <span className="text-[10px] opacity-20">-</span>}
+                   </TableCell>
+                   <TableCell className="py-2 text-right">
+                      <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                              <Button variant="ghost" size="icon" className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-white/10">
+                                  <MoreHorizontal className="w-3 h-3" />
+                              </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end" className="bg-black/90 border-white/10 backdrop-blur-xl">
+                              <DropdownMenuItem className="text-xs cursor-pointer" onClick={() => { setEditingTaskId(task.id); setModalOpen(true); }}>Editar Detalhes</DropdownMenuItem>
+                              <DropdownMenuItem className="text-xs text-red-400 focus:text-red-400 cursor-pointer" onClick={async () => { 
+                                  if(confirm("Tem certeza?")) { await Task.delete(task.id); loadTasks(); }
+                              }}>Excluir</DropdownMenuItem>
+                          </DropdownMenuContent>
+                      </DropdownMenu>
+                   </TableCell>
+                 </TableRow>
+               ))
+            )}
+          </TableBody>
+        </Table>
+      </div>
+
+      <PranaFormModal
+        isOpen={modalOpen}
+        onClose={() => setModalOpen(false)}
+        itemType="task"
+        editingItemId={editingTaskId}
+        onSave={() => { loadTasks(); setModalOpen(false); }}
+      />
+    </div>
+  );
+}

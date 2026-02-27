@@ -1,0 +1,64 @@
+📑 Prana V10: Manifesto de Evolução do Enxame
+Versão: 10.0.1 (Stable Build) | Codinome: Progenitor Status: Swarm-Enabled & System-Modulation Active
+
+I. A Mudança de Paradigma: Do Assistente ao SO Agêntico
+O Prana V10 deixa de ser uma interface de chat para se tornar um Barramento de Inteligência Distribuída. A grande inovação é a Agência Desacoplada: separamos a consciência (LLM) da capabilidade (Tools) e da autoridade (System Modulation).
+
+1. Acoplamento vs. Progenitura
+Acoplamento: É a capacidade de agentes existentes (Ash, Neo, Olly) colaborarem e trocarem contexto via AgentCollaboration.js.
+
+Progenitura (Ash as Provisioner): O Ash atua como o Kernel do sistema. Ele tem autoridade para identificar lacunas de competência e "instalar" ou "criar" novos agentes sob demanda.
+
+Insight de Monetização: Esta função de "Instalação" via Ash é a base do Prana Marketplace. O usuário solicita uma habilidade (ex: "Auditoria Fiscal"), e o Ash provisiona o agente correspondente, permitindo um modelo de Pay-per-Agent ou Subscription-based Expertise.
+
+II. Modulação do Sistema: O Agente como Driver
+Na V10, as ferramentas não são apenas funções externas; elas são Moduladores do Sistema Prana.
+
+Alteração de Estado: Quando um agente como o Neo é acoplado, ele injeta novas camadas na UI (Code-Diff, Health Scores).
+
+Mudança de Bioma: As ferramentas de um agente podem "modular" o Bioma atual, alterando restrições de tempo, visibilidade de arquivos e fluxos de trabalho.
+
+Interferência Direta: O agente tem permissão para reescrever o comportamento do software (Ex: Neo alterando rotas no backend).
+
+III. O Sistema Nervoso Central (Backbone)
+1. AgentRegistryService (O Cartório de Identidade)
+Gerencia o ciclo de vida e o provisionamento.
+
+Dynamic Installation: Ash utiliza este serviço para registrar novos agentes "on-the-fly" após o pedido do Arquiteto.
+
+Permissions Mapping: Define o nível de modulação que cada agente tem sobre o Core do Prana.
+
+2. AgentLogService & AgentEventService (Telemetria Real-time)
+O sistema sensorial que permite a transparência da "Sala de Guerra".
+
+Neural Stream: Transmissão via SSE de cada ação técnica, permitindo que o Arquiteto audite o enxame em tempo real.
+
+IV. Vértice "Agente + Ferramenta" (Agentic Tooling)
+1. AgentToolManifest.js (A Caixa de Ferramentas)
+Cada agente é um conjunto de Prompt + Tools.
+
+Modulação Técnica: Neo + RefactorEngine (Mãos no Código).
+
+Modulação Biométrica: Ash + BioLink (Mãos na Saúde do Arquiteto).
+
+Modulação Criativa: Olly + CopyFlow (Mãos no Crescimento).
+
+V. Interface de Comando: Sala de Guerra (War Room)
+1. UI Adaptativa (SideChat Expansion)
+O SideChat "abre as asas" para revelar a CollaborationView. Não é apenas visual; é uma mudança de modo de consciência do software:
+
+Modo Foco (Chat): Interface limpa para diálogo.
+
+Modo Engenharia (Expanded): Interface densa com Logs, Diffs e Telemetria.
+
+2. Code-Diff Viewer (Governança)
+O último filtro de autoridade. O Arquiteto revisa a modulação proposta pelo enxame antes que ela se torne realidade no disco rígido.
+
+VI. Direção Futura: Autonomia e Expansão
+The Forge: Interface para o Arquiteto criar e treinar seus próprios agentes personalizados, definindo prompts e acoplando ferramentas exclusivas.
+
+Autonomic Scaling: Agentes que detectam sub-problemas e solicitam ao Ash o provisionamento de "Micro-Agentes" temporários para tarefas específicas.
+
+Marketplace Integration: O Ash como o gateway para uma biblioteca global de agentes especialistas.
+
+Nota do Arquiteto: Na V10, o Prana não apenas te ajuda a trabalhar; ele evolui a sua capacidade de trabalho através da expansão modular do enxame.

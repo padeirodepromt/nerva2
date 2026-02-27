@@ -1,0 +1,33 @@
+{
+  "appId": "com.prana.app",
+  "appName": "Prana",
+  "webDir": "dist",
+  "server": {
+    "androidScheme": "https"
+  },
+  "ios": {
+    "scheme": "App",
+    "limitsNavigationsToAppBoundDomains": true,
+    "preferredConfig": "Debug"
+  },
+  "android": {
+    "allowMixedContent": true,
+    "webContentsDebuggingEnabled": true
+  },
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 3000,
+      "showSpinner": false
+    },
+    "StatusBar": {
+      "style": "dark",
+      "backgroundColor": "#ffffff"
+    },
+    "Camera": {
+      "permissions": ["photos", "camera"]
+    },
+    "Geolocation": {
+      "permissions": ["location"]
+    }
+  }
+}
