@@ -1,134 +1,101 @@
-/* src/App.jsx
-   desc: App Root v8.3 (All Callbacks Integrated)
-*/
-import React, { useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+// src/App.jsx
+import React, { useMemo, useState } from "react";
+import LogsTerminal from "./components/nerva/LogsTerminal";
+import Console from "./components/nerva/Console";
+import ApprovalsPanel from "./components/nerva/ApprovalsPanel";
+import { nervaClient } from "./api/nervaClient";
 
-// Provedores
-import { AuthProvider, useAuth } from '@/hooks/useAuth';
-import { LanguageProvider } from '@/components/LanguageProvider';
-import { ThemeProvider } from '@/components/ThemeProvider';
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { Toaster } from "@/components/ui/sonner";
-import { useIsMobile } from '@/hooks/use-mobile';
-import { BiomeProvider } from './contexts/BiomeContext'; 
-import { OllyProvider } from './contexts/OllyContext'; 
+function GrainGrid() {
+  return (
+    <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
+      <div
+        className="absolute inset-0"
+        style={{
+          background:
+            "radial-gradient(circle at 25% 20%, rgba(0,0,0,0.06), transparent 45%), radial-gradient(circle at 70% 35%, rgba(0,0,0,0.05), transparent 50%), radial-gradient(circle at 60% 80%, rgba(0,0,0,0.05), transparent 55%), linear-gradient(to bottom, rgba(0,0,0,0.02), transparent 35%, rgba(0,0,0,0.02))"
+        }}
+      />
+      <div
+        className="absolute inset-0 opacity-[0.25]"
+        style={{
+          backgroundImage:
+            "linear-gradient(rgba(0,0,0,0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,0.08) 1px, transparent 1px)",
+          backgroundSize: "72px 72px"
+        }}
+      />
+      <div
+        className="absolute inset-0"
+        style={{
+          background:
+            "radial-gradient(circle at 55% 35%, rgba(255,255,255,0.0), rgba(255,255,255,0.0) 55%, rgba(0,0,0,0.05) 80%, rgba(0,0,0,0.08) 100%)"
+        }}
+      />
+    </div>
+  );
+}
 
-// Serviços
-import { ashProactive } from './services/ashProactiveService';
-import notificationService from './services/notificationService';
-
-// Componentes
-import PranaLoader from '@/components/PranaLoader';
-import LoginModal from '@/components/auth/LoginModal';
-import PranaWorkspaceLayout from '@/pages/PranaWorkspaceLayout';
-import MobileWorkspaceLayout from '@/components/mobile/MobileWorkspaceLayout';
-import PranaWebsite from '@/site/PranaWebsite';
-import PlansPage from '@/site/pages/PlansPage';
-import CheckoutPage from '@/site/pages/CheckoutPage';
-import SocialCallback from '@/site/pages/SocialCallback'; 
-import IntegrationCallback from '@/site/pages/IntegrationCallback'; // <--- IMPORT NOVO
-import LandingPageHolistic_Backup from './site/personas/LandingPageHolistic_Backup';
-import AshPage from './site/pages/AshPage';
-import LandingPageHolistic from './site/personas/LandingPageHolistic';
-import PranaSanctuary from './site/pages/PranaSanctuary';
-import LandingPageBeta from './site/personas/LandingPageBeta';
-
-import { registerAllProtocolAdapters } from "@/modules/protocols/registerAdapters";
-registerAllProtocolAdapters();
-
-function AppContent() {
-    const { user, isLoading, userPlan } = useAuth();
-    const isMobile = useIsMobile();
-
-    // --- CONSCIÊNCIA DO ASH ---
-    useEffect(() => {
-        const initAsh = async () => {
-            if (user) {
-                await notificationService.initPushNotifications();
-                ashProactive.startMonitoring(userPlan || 'SEED');
-            } else {
-                ashProactive.stopMonitoring();
-            }
-        };
-
-        initAsh();
-        
-        const handleNotificationClick = (event) => {
-            const { detail } = event;
-            console.log("[App] Notificação clicada:", detail);
-        };
-
-        window.addEventListener('notificationTapped', handleNotificationClick);
-
-        return () => {
-            ashProactive.stopMonitoring();
-            window.removeEventListener('notificationTapped', handleNotificationClick);
-        };
-    }, [user, userPlan]); 
-
-    if (isLoading) return <PranaLoader fullScreen text="Carregando cockpit..." />;
-
-    return (
-        <Routes>
-            {/* ROTAS PÚBLICAS (Site) */}
-            <Route path="/home" element={<LandingPageHolistic />} />
-            <Route path="/home/plans" element={<PlansPage />} />
-            <Route path="/home/checkout" element={<CheckoutPage />} />
-            <Route path="/home/beta" element={<LandingPageBeta />} />
-            
-            {/* --- FLUXO DE VENDAS & AUTH --- */}
-            <Route path="/checkout" element={<CheckoutPage />} />
-            <Route path="/auth/callback" element={<SocialCallback />} />
-            
-            {/* --- CALLBACKS DE INTEGRAÇÃO (Calendar/Github) --- */}
-            <Route path="/settings/integrations/callback" element={<IntegrationCallback />} /> {/* <--- ROTA ADICIONADA */}
-
-            {/* Rotas de Demonstração / Legado */}
-            <Route path="/old-home" element={<PranaWebsite />} />
-            <Route path="/backup" element={<LandingPageHolistic_Backup />} />
-            <Route path="/ash" element={<AshPage />} />
-            <Route path="/sanc" element={<PranaSanctuary />} />
-
-            {/* ROTA RAIZ (Login ou Workspace) */}
-            <Route path="/" element={
-                !user ? (
-                    <>
-                         <div className="fixed inset-0 w-full h-full bg-background" />
-                         <LoginModal isOpen={true} />
-                    </>
-                ) : (
-                    isMobile ? <MobileWorkspaceLayout /> : <PranaWorkspaceLayout />
-                )
-            } />
-
-            {/* FALLBACK */}
-            <Route path="/*" element={
-                !user ? <Navigate to="/" replace /> : (
-                    isMobile ? <MobileWorkspaceLayout /> : <PranaWorkspaceLayout />
-                )
-            } />
-        </Routes>
-    );
+function Select({ label, value, onChange, options }) {
+  return (
+    <div className="inline-flex items-center gap-2 rounded-xl border border-black/10 bg-white/60 px-3 py-2">
+      <span className="text-[11px] text-black/45">{label}</span>
+      <select
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className="bg-transparent text-[12px] text-black/80 outline-none"
+      >
+        {options.map((o) => (
+          <option key={o} value={o}>{o}</option>
+        ))}
+      </select>
+    </div>
+  );
 }
 
 export default function App() {
+  const [area, setArea] = useState("Tudo");
+  const [channel, setChannel] = useState("Todos");
+  const [selectedLog, setSelectedLog] = useState(null);
+
+  const filters = useMemo(() => ({ area, channel, limit: 200 }), [area, channel]);
+
+  async function createApproval(payload) {
+    await nervaClient.createApproval(payload);
+  }
+
   return (
-    <AuthProvider>
-      <LanguageProvider>
-        <ThemeProvider defaultTheme="prana-dark" storageKey="prana-ui-theme">
-          <BiomeProvider>
-            <OllyProvider>
-              <TooltipProvider>
-                <Router>
-                  <AppContent />
-                  <Toaster />
-                </Router>
-              </TooltipProvider>
-            </OllyProvider>
-          </BiomeProvider>
-        </ThemeProvider>
-      </LanguageProvider>
-    </AuthProvider>
+    <div className="relative min-h-screen bg-[#F3F2EE] text-black">
+      <GrainGrid />
+
+      <div className="relative z-10 mx-auto max-w-[1300px] px-4 py-6">
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <div className="text-[12px] font-semibold tracking-wide">NERVA</div>
+            <div className="text-[11px] text-black/55">Operational Intelligence · Console</div>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2">
+            <Select label="Área" value={area} onChange={setArea} options={["Tudo", "Vendas", "Operação", "Marketing", "Atendimento", "Financeiro"]} />
+            <Select label="Canal" value={channel} onChange={setChannel} options={["Todos", "System", "WhatsApp", "Meta Ads", "Google Ads", "Gmail", "Sheets", "CRM"]} />
+          </div>
+        </div>
+
+        <div className="h-[82vh] overflow-hidden rounded-[28px] border border-black/10 bg-white/40 shadow-[0_40px_140px_rgba(0,0,0,0.16)] backdrop-blur-xl">
+          <div className="flex h-full min-h-0">
+            <div className="min-w-0 flex-1">
+              <LogsTerminal filters={filters} onSelect={setSelectedLog} />
+            </div>
+
+            <div className="w-[520px] min-w-[420px] max-w-[560px]">
+              <div className="flex h-full flex-col">
+                <div className="flex-1 min-h-0">
+                  <Console selectedLog={selectedLog} onCreateApproval={createApproval} />
+                </div>
+                <ApprovalsPanel />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }

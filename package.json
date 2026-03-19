@@ -1,5 +1,5 @@
 {
-  "name": "prana",
+  "name": "nerva",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -13,7 +13,6 @@
     "db:push": "drizzle-kit push"
   },
   "dependencies": {
-    "@agentolly/prana-integration": "^1.0.0",
     "@anthropic-ai/sdk": "^0.70.0",
     "@capacitor/android": "^8.0.0",
     "@capacitor/app": "^8.0.0",
